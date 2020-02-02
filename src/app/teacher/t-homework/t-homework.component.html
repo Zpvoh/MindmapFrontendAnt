@@ -1,10 +1,12 @@
 <button nz-button nzType="primary" class="releaseBtn"
-        (click)="openReleaseModal(newMultipleTitle, newMultipleContent, newMultipleFooter)">发布选择题</button>
+        (click)="openReleaseModal(newMultipleTitle, newMultipleContent, newMultipleFooter)">发布选择题
+</button>
 <button nz-button nzType="primary" class="releaseBtn"
-        (click)="openReleaseModal(newShortTitle, newShortContent, newShortFooter)">发布简答题</button>
+        (click)="openReleaseModal(newShortTitle, newShortContent, newShortFooter)">发布简答题
+</button>
 <button nz-button nzType="primary" class="releaseBtn"
-        (click)="openReleaseModal(newJudgeTitle, newJudgeContent, newJudgeFooter)">发布判断题</button>
-
+        (click)="openReleaseModal(newJudgeTitle, newJudgeContent, newJudgeFooter)">发布判断题
+</button>
 
 
 <nz-collapse id="homework-nz-collapse">
@@ -38,12 +40,12 @@
           <span><b>正确答案：</b></span>
           <span>{{multiple.correct_answer}}</span>
         </div>
-        <div class="number item">
-          <span><b>正确率：</b></span>
-          <span class="correct_number">{{multiple.correct_number}}</span>
-          <span> / </span>
-          <span class="number">{{multiple.number}}</span>
-        </div>
+        <!--<div class="number item">-->
+        <!--<span><b>正确率：</b></span>-->
+        <!--<span class="correct_number">{{multiple.correct_number}}</span>-->
+        <!--<span> / </span>-->
+        <!--<span class="number">{{multiple.number}}</span>-->
+        <!--</div>-->
 
         <!--分割线-->
         <nz-divider></nz-divider>
@@ -70,7 +72,26 @@
 
         <p><b>学生回答：</b></p>
         <nz-list [nzDataSource]="short['studentAnswers']" nzSize="small" [nzRenderItem]="item">
-          <ng-template #item let-item><nz-list-item [nzContent]="item['answer']"></nz-list-item></ng-template>
+          <ng-template #item let-item>
+            <nz-list-item [nzContent]="item['answer']"></nz-list-item>
+            <div>
+              给分：
+              <form nz-form>
+                <nz-form-item>
+                  <nz-form-label [nzSpan]="5">分值</nz-form-label>
+                  <nz-form-control [nzSpan]="12">
+                    <nz-input-number [(ngModel)]="item['score']" [nzMin]="1" [nzMax]="10" [nzStep]="1"
+                                     name="mScore"></nz-input-number>
+                  </nz-form-control>
+                </nz-form-item>
+                <button nz-button
+                        (click)="correctShort(item['assignmentLongId'], item['studentId'], item['score'])"
+                        [disabled]="item['score']==''">
+                  提交
+                </button>
+              </form>
+            </div>
+          </ng-template>
         </nz-list>
 
         <nz-divider></nz-divider>
@@ -95,12 +116,12 @@
           <span><b>正确答案：</b></span>
           <span>{{judge.correct_answer=='T' ? '正确': '错误'}}</span>
         </div>
-        <div class="number item">
-          <span><b>正确率：</b></span>
-          <span class="correct_number">{{judge.correct_number}}</span>
-          <span> / </span>
-          <span class="number">{{judge.number}}</span>
-        </div>
+        <!--<div class="number item">-->
+        <!--<span><b>正确率：</b></span>-->
+        <!--<span class="correct_number">{{judge.correct_number}}</span>-->
+        <!--<span> / </span>-->
+        <!--<span class="number">{{judge.number}}</span>-->
+        <!--</div>-->
 
         <nz-divider></nz-divider>
 
@@ -109,8 +130,6 @@
 
   </nz-collapse-panel>
 </nz-collapse>
-
-
 
 
 <!-- 模板 发布新的单选题 -->
@@ -166,7 +185,8 @@
     <nz-form-item>
       <nz-form-label [nzSpan]="5">分值(1-10)</nz-form-label>
       <nz-form-control [nzSpan]="12">
-        <nz-input-number [(ngModel)]="multiple.value" [nzMin]="1" [nzMax]="10" [nzStep]="1" name="mScore"></nz-input-number>
+        <nz-input-number [(ngModel)]="multiple.value" [nzMin]="1" [nzMax]="10" [nzStep]="1"
+                         name="mScore"></nz-input-number>
       </nz-form-control>
     </nz-form-item>
 
@@ -187,7 +207,6 @@
 </ng-template>
 
 
-
 <!-- 模板 发布新的简答题 -->
 <ng-template #newShortTitle>
   <span>发布简答题</span>
@@ -205,6 +224,14 @@
       <nz-form-label [nzSpan]="5">正确答案</nz-form-label>
       <nz-form-control [nzSpan]="12">
         <textarea rows="4" nz-input [(ngModel)]="short.correct_answer" name="sAnswer"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">分值(1-10)</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <nz-input-number [(ngModel)]="short.value" [nzMin]="1" [nzMax]="10" [nzStep]="1"
+                         name="sScore"></nz-input-number>
       </nz-form-control>
     </nz-form-item>
 
@@ -247,7 +274,8 @@
     <nz-form-item>
       <nz-form-label [nzSpan]="5">分值(1-10)</nz-form-label>
       <nz-form-control [nzSpan]="12">
-        <nz-input-number [(ngModel)]="judge.value" [nzMin]="1" [nzMax]="10" [nzStep]="1" name="jScore"></nz-input-number>
+        <nz-input-number [(ngModel)]="judge.value" [nzMin]="1" [nzMax]="10" [nzStep]="1"
+                         name="jScore"></nz-input-number>
       </nz-form-control>
     </nz-form-item>
   </form>

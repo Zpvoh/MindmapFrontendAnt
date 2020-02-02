@@ -5,6 +5,7 @@ import '../../../assets/jsmind/jsmind.screenshot.js';
 import {TMindmapService} from '../t-mindmap.service';
 import {NzModalService} from 'ng-zorro-antd';
 import { ColorPickerService, Rgba} from 'ngx-color-picker';
+import cytoscape from 'cytoscape';
 import EChartOption = echarts.EChartOption;
 
 const options = {
@@ -120,6 +121,10 @@ export class TMindmapComponent implements OnInit {
     const nodeid = jsMind.util.uuid.newid();
     const topic = '* 新节点 *';
     this.mindMap.add_node(selected_node, nodeid, topic);
+  }
+
+  add_precursor() {
+    return;
   }
 
   add_brother(): void {

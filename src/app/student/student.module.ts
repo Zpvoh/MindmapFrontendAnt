@@ -13,6 +13,7 @@ import { SCoursewareComponent } from './s-courseware/s-courseware.component';
 import { SHomeworkComponent } from './s-homework/s-homework.component';
 
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { SLearningSituationComponent } from './s-learning-situation/s-learning-situation.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     SMindmapComponent,
     SResourceComponent,
     SCoursewareComponent,
-    SHomeworkComponent
+    SHomeworkComponent,
+    SLearningSituationComponent
   ],
   imports: [
     CommonModule,

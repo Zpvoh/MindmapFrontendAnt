@@ -15,6 +15,7 @@ import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { NgxEchartsModule } from 'ngx-echarts';
+import { TMindmapCytoComponent } from './t-mindmap-cyto/t-mindmap-cyto.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
     THomeworkComponent,
     TResourceComponent,
     TCoursewareComponent,
+    TMindmapCytoComponent,
   ],
   imports: [
     CommonModule,

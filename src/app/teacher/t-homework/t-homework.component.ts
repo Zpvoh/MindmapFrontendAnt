@@ -32,7 +32,8 @@ export class THomeworkComponent implements OnInit, OnChanges {
   constructor(
     private nodeService: TNodeService,
     private modalService: NzModalService
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.updateHomework();
@@ -93,7 +94,7 @@ export class THomeworkComponent implements OnInit, OnChanges {
     });
   }
 
-  releaseMultiple () {
+  releaseMultiple() {
     // 发布选择题
     this.nodeService.releaseMutiple(
       this.course_id,
@@ -115,6 +116,11 @@ export class THomeworkComponent implements OnInit, OnChanges {
       this.node_id,
       this.short)
       .subscribe((value => this.checkShort(value['success'])));
+  }
+
+  correctShort(assignment_id, student_id, score) {
+    // 批改简答题
+    this.nodeService.correctShort(assignment_id, student_id, score).subscribe((value => this.checkCorrectShort(value['success'])));
   }
 
   releaseJudge() {
@@ -141,6 +147,15 @@ export class THomeworkComponent implements OnInit, OnChanges {
   checkShort(value) {
     if (value) {
       this.alertSuccess('发布成功', '简答题列表已更新');
+
+      this.updateHomework();
+      this.short = new ShortQuestion();
+    }
+  }
+
+  checkCorrectShort(value) {
+    if (value) {
+      this.alertSuccess('批改成功', '简答题批改结果已更新');
 
       this.updateHomework();
       this.short = new ShortQuestion();

@@ -90,6 +90,16 @@
             [node_id]="selected_node_id">
           </app-s-courseware>
         </nz-tab>
+
+        <nz-tab [nzTitle]="'学习情况分析'"
+                [nzDisabled]="selected_node_id===''">
+          <app-s-learning-situation
+            *ngIf="selected_node_id"
+            [course_id]="course_id"
+            [mind_id]="currentMindmap.id"
+            [node_id]="selected_node_id">
+          </app-s-learning-situation>
+        </nz-tab>
       </nz-tabset>
     </nz-content>
 

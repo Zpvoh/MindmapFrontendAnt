@@ -55,6 +55,12 @@ export class TNodeService {
     return this.http.post<boolean>(this.tempUrl, short, httpOptions);
   }
 
+  // 教师批改简答题
+  correctShort(assignment_long_id: string, student_id: string, score: number): Observable<boolean>{
+    this.tempUrl = this.baseUrl + 'correct_short/' + assignment_long_id + '/' + student_id;
+    return this.http.post<boolean>(this.tempUrl, score);
+  }
+
   // 教师发布判断题
   releaseJudge(course_id: string, mindmap_id: string, node_id: string, judge: JudgeQuestion): Observable<boolean> {
     this.tempUrl = this.baseUrl + 'release_judgement/' + course_id + '/' + mindmap_id + '/' + node_id;

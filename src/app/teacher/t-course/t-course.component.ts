@@ -9,6 +9,7 @@ import {THomeworkComponent} from '../t-homework/t-homework.component';
 import {TResourceComponent} from '../t-resource/t-resource.component';
 import {TCoursewareComponent} from '../t-courseware/t-courseware.component';
 import {TCourseService} from '../t-course.service';
+import {TMindmapCytoComponent} from '../t-mindmap-cyto/t-mindmap-cyto.component';
 
 @Component({
   selector: 'app-t-course',
@@ -19,6 +20,9 @@ export class TCourseComponent implements OnInit {
 
   @ViewChild(TMindmapComponent)
   mindmapComponent: TMindmapComponent;
+
+  // @ViewChild(TMindmapCytoComponent)
+  // mindmapComponent: TMindmapCytoComponent;
 
   @ViewChild(THomeworkComponent)
   private homeworkComponent: THomeworkComponent;

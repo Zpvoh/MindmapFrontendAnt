@@ -1,0 +1,78 @@
+<nz-collapse id="learning-situation-nz-collapse">
+  <!--单选得分面板-->
+  <nz-collapse-panel
+    [nzHeader]="'选择题得分'"
+    [nzActive]="false"
+    [nzDisabled]="false">
+
+    <!--单选题正确率列表-->
+    <ol>
+      <li *ngFor="let stuMultiple of stuMultiples" class="multiple">
+        <div class="title item">
+          <b>{{stuMultiple.title}}</b>
+          <span style="margin: 10px">{{stuMultiple['correctness']?'正确':'错误'}}</span>
+          <span>{{stuMultiple['score']}}/{{stuMultiple['fullScore']}}</span>
+        </div>
+        <nz-divider></nz-divider>
+      </li>
+    </ol>
+
+
+  </nz-collapse-panel>
+
+  <!--简答题得分面板-->
+  <nz-collapse-panel
+    [nzHeader]="'简答题得分'"
+    [nzActive]="false"
+    [nzDisabled]="false">
+
+    <!--简答题列表-->
+    <ol>
+      <li *ngFor="let stuShort of stuShorts" class="short">
+        <div class="title item">
+          <b>{{stuShort.title}}</b>
+          <span style="margin: 10px">{{stuShort['score']}}/{{stuShort['fullScore']}}</span>
+        </div>
+        <nz-divider></nz-divider>
+      </li>
+    </ol>
+
+  </nz-collapse-panel>
+
+
+  <!--判断题得分面板-->
+  <nz-collapse-panel
+    [nzHeader]="'判断题得分'"
+    [nzActive]="false"
+    [nzDisabled]="false">
+
+    <!--判断题正确率列表-->
+    <ol>
+      <li *ngFor="let stuJudge of stuJudges" class="judgment">
+        <div class="title item">
+          <b>{{stuJudge.title}}</b>
+          <span style="margin: 10px">{{stuJudge['correctness']?'正确':'错误'}}</span>
+          <span>{{stuJudge['score']}}/{{stuJudge['fullScore']}}</span>
+        </div>
+        <div class="content item"></div>
+        <nz-divider></nz-divider>
+      </li>
+    </ol>
+
+
+  </nz-collapse-panel>
+
+  <!--薄弱环节面板-->
+  <nz-collapse-panel
+    [nzHeader]="'薄弱环节判定'"
+    [nzActive]="false"
+    [nzDisabled]="false">
+
+    <!--薄弱环节列表-->
+    <ol>
+    </ol>
+
+
+  </nz-collapse-panel>
+
+</nz-collapse>
