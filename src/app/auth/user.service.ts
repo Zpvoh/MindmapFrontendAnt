@@ -1,13 +1,15 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { User } from './user';
-import { Observable } from 'rxjs';
-import { RegisterUser } from './register-user';
-import { environment } from '../../environments/environment';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {User} from './user';
+import {Observable} from 'rxjs';
+import {RegisterUser} from './register-user';
+import {environment} from '../../environments/environment';
 
 
 const httpOptions = {
-  headers: new HttpHeaders({'Content-Type': 'application/json'})
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json'
+  })
 };
 
 @Injectable({
@@ -21,7 +23,7 @@ export class UserService {
   private modifyPwdUrl = '';
 
   constructor(
-      private http: HttpClient
+    private http: HttpClient
   ) {
     const url = environment.apiUrl;
 

@@ -96,7 +96,15 @@
             <!--(modifyContentEvent)="onMindmapChanged($event)"-->
             <!--(selectNodeEvent)="onSelectedNodeChanged($event)">-->
           <!--</app-t-mindmap>-->
-          <app-t-mindmap-cyto *ngIf="currentMindmap" [mindmapId]="currentMindmap.id"></app-t-mindmap-cyto>
+          <app-t-mindmap-cyto
+            *ngIf="currentMindmap"
+            [courseId]="course_id"
+            [mindmapId]="currentMindmap.id"
+            [inAccuracyMode]="switchToAccuracyMode"
+            (modifyContentEvent)="onMindmapChanged($event)"
+            (selectNodeEvent)="onSelectedNodeChanged($event)"
+          >
+          </app-t-mindmap-cyto>
         </nz-tab>
 
         <!--作业-->

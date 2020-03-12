@@ -18,11 +18,11 @@ import {TMindmapCytoComponent} from '../t-mindmap-cyto/t-mindmap-cyto.component'
 })
 export class TCourseComponent implements OnInit {
 
-  @ViewChild(TMindmapComponent)
-  mindmapComponent: TMindmapComponent;
+  // @ViewChild(TMindmapComponent)
+  // mindmapComponent: TMindmapComponent;
 
-  // @ViewChild(TMindmapCytoComponent)
-  // mindmapComponent: TMindmapCytoComponent;
+  @ViewChild(TMindmapCytoComponent)
+  mindmapComponent: TMindmapCytoComponent;
 
   @ViewChild(THomeworkComponent)
   private homeworkComponent: THomeworkComponent;
