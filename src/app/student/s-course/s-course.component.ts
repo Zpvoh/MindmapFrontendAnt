@@ -4,6 +4,7 @@ import {Mindmap} from '../../mindmap';
 import {NzModalService} from 'ng-zorro-antd';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SMindmapComponent} from '../s-mindmap/s-mindmap.component';
+import {SMindmapCytoComponent} from '../s-mindmap-cyto/s-mindmap-cyto.component';
 import {SResourceComponent} from '../s-resource/s-resource.component';
 import {SCoursewareComponent} from '../s-courseware/s-courseware.component';
 import {SHomeworkComponent} from '../s-homework/s-homework.component';
@@ -17,6 +18,9 @@ import {SMindmapService} from '../s-mindmap.service';
 export class SCourseComponent implements OnInit {
   @ViewChild(SMindmapComponent)
   mindmapComponent: SMindmapComponent;
+
+  @ViewChild(SMindmapCytoComponent)
+  mindmapCytoComponent: SMindmapCytoComponent;
 
   @ViewChild(SHomeworkComponent)
   private homeworkComponent: SHomeworkComponent;

@@ -1,7 +1,7 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { Mindmap } from '../../mindmap';
+import {Mindmap} from '../../mindmap';
 import {TMindmapService} from '../t-mindmap.service';
 import {TMindmapComponent} from '../t-mindmap/t-mindmap.component';
 import {NzModalRef, NzModalService} from 'ng-zorro-antd';
@@ -51,7 +51,7 @@ export class TCourseComponent implements OnInit {
   tplModal: NzModalRef; // 用于创建新的思维导图
   newMindmapName = '';
   newMindJson = {
-    'meta' : {
+    'meta': {
       'name': '',
       'author': 'user',
       'version': '0.2'
@@ -60,11 +60,7 @@ export class TCourseComponent implements OnInit {
     'format': 'node_tree',
     /* 数据内容 */
 
-    'data': {
-      'id': 'root',
-      'topic': '* 根节点 *',
-      'expanded': true
-    }
+    'jsonData': []
   }; // 用作创建新思维导图时填充
 
   selectedIndex = 0; // tab序号
@@ -100,13 +96,13 @@ export class TCourseComponent implements OnInit {
   // 提示保存原来的思维导图
   promptSave() {
     return this.modalService.confirm({
-      nzTitle     : '是否保存对当前思维导图的修改？',
-      nzContent   : '<b style="color: red;">如果不保存，会丢失所有更改</b>',
-      nzOkText    : '是',
-      nzOkType    : 'primary',
-      nzOnOk      : () => this.mindmapComponent.save(),
+      nzTitle: '是否保存对当前思维导图的修改？',
+      nzContent: '<b style="color: red;">如果不保存，会丢失所有更改</b>',
+      nzOkText: '是',
+      nzOkType: 'primary',
+      nzOnOk: () => this.mindmapComponent.save(),
       nzCancelText: '否',
-      nzOnCancel  : () => {
+      nzOnCancel: () => {
         this.isChanged = false;
       }
     });
@@ -167,7 +163,7 @@ export class TCourseComponent implements OnInit {
           () => {
             inModal.destroy();
             this.tplModal.destroy();
-            },
+          },
           2000
         );
       }
@@ -239,26 +235,26 @@ export class TCourseComponent implements OnInit {
     }
 
     const deleteModal = this.modalService.warning({
-      nzTitle     :  `确认删除思维导图${this.currentMindmap.name}吗？`,
-      nzContent   : '<b style="color: red;">删除后将无法恢复</b>',
-      nzOkText    : '是',
-      nzOkType    : 'primary',
-      nzOnOk      : () => this.mindmapService.deleteMindmap(this.currentMindmap.id).subscribe(
-        r => {
-          deleteModal.destroy();
-          this.mindmapService.getMindmapList(this.course_id).subscribe(list => {
+        nzTitle: `确认删除思维导图${this.currentMindmap.name}吗？`,
+        nzContent: '<b style="color: red;">删除后将无法恢复</b>',
+        nzOkText: '是',
+        nzOkType: 'primary',
+        nzOnOk: () => this.mindmapService.deleteMindmap(this.currentMindmap.id).subscribe(
+          r => {
+            deleteModal.destroy();
+            this.mindmapService.getMindmapList(this.course_id).subscribe(list => {
 
-            this.mindmapList = Array.from(list);
-            if (this.mindmapList.length > 0) {
-              this.currentMindmap = this.mindmapList[0];
-            } else {
-              this.currentMindmap = null;
-            }
+              this.mindmapList = Array.from(list);
+              if (this.mindmapList.length > 0) {
+                this.currentMindmap = this.mindmapList[0];
+              } else {
+                this.currentMindmap = null;
+              }
 
-          });
-        }),
-      nzCancelText: '否',
-      nzOnCancel  : () => {
+            });
+          }),
+        nzCancelText: '否',
+        nzOnCancel: () => {
           deleteModal.destroy();
         }
       }

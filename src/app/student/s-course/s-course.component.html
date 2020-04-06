@@ -50,12 +50,18 @@
         <!--思维导图-->
         <nz-tab [nzTitle]="'思维导图'"
                 (nzDeselect)="updateData()">
-          <app-s-mindmap
+          <!--<app-s-mindmap-->
+            <!--*ngIf="currentMindmap"-->
+            <!--[courseId]="course_id"-->
+            <!--[mindmapId]="currentMindmap.id"-->
+            <!--(selectNodeEvent)="onSelectedNodeChanged($event)">-->
+          <!--</app-s-mindmap>-->
+          <app-s-graph
             *ngIf="currentMindmap"
             [courseId]="course_id"
             [mindmapId]="currentMindmap.id"
             (selectNodeEvent)="onSelectedNodeChanged($event)">
-          </app-s-mindmap>
+          </app-s-graph>
         </nz-tab>
 
         <!--作业-->

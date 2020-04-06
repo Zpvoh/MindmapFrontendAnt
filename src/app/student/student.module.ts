@@ -14,6 +14,7 @@ import { SHomeworkComponent } from './s-homework/s-homework.component';
 
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { SLearningSituationComponent } from './s-learning-situation/s-learning-situation.component';
+import { SGraphComponent } from './s-graph/s-graph.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { SLearningSituationComponent } from './s-learning-situation/s-learning-s
     SResourceComponent,
     SCoursewareComponent,
     SHomeworkComponent,
-    SLearningSituationComponent
+    SLearningSituationComponent,
+    SGraphComponent
   ],
   imports: [
     CommonModule,

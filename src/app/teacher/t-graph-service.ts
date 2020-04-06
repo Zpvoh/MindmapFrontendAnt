@@ -12,7 +12,7 @@ const httpOptions = {
 @Injectable({
   providedIn: 'root'
 })
-export class TMindmapService {
+export class TGraphService {
 
   private baseUrl = '';
 
@@ -25,22 +25,22 @@ export class TMindmapService {
   }
 
   getMindmapList(course_id: string): Observable<Mindmap[]> {
-    this.tempUrl = this.baseUrl + 'graph_id_list/' + course_id;
+    this.tempUrl = this.baseUrl + 'mindmap_id_list/' + course_id;
     return this.http.get<any>(this.tempUrl);
   }
 
-  getMindmap(course_id: string, mind_id: string): Observable<any> {
-    this.tempUrl = this.baseUrl + 'graph/' + course_id + '/' + mind_id;
+  getGraph(course_id: string, graph_id: string): Observable<any> {
+    this.tempUrl = this.baseUrl + 'graph/' + course_id + '/' + graph_id;
     return this.http.get<any>(this.tempUrl);
   }
 
   // 返回值为根的信息
   createMindmap(course_id: string, mind_id: string, data: string): Observable<any> {
-    return this.saveMind(course_id, mind_id, data);
+    return this.saveGraph(course_id, mind_id, data);
   }
 
-  saveMind(course_id: string, mind_id: string, data: string): Observable<any> {
-    this.tempUrl = this.baseUrl + 'save_graph/' + course_id + '/' + mind_id;
+  saveGraph(course_id: string, graph_id: string, data: string): Observable<any> {
+    this.tempUrl = this.baseUrl + 'save_graph/' + course_id + '/' + graph_id;
     return this.http.post<any>(this.tempUrl, data);
   }
 

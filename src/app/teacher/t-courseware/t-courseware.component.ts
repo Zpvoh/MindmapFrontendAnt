@@ -1,7 +1,7 @@
 import {Component, Input, OnChanges, OnInit, ViewChild} from '@angular/core';
-import { TNodeService } from '../t-node.service';
-import { environment } from '../../../environments/environment';
-import { NzMessageService, UploadFile, UploadFilter } from 'ng-zorro-antd';
+import {TNodeService} from '../t-node.service';
+import {environment} from '../../../environments/environment';
+import {NzMessageService, UploadFile, UploadFilter} from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-t-courseware',
@@ -25,7 +25,7 @@ export class TCoursewareComponent implements OnInit, OnChanges {
   filters: UploadFilter[] = [
     {
       name: 'type',
-      fn  : (fileList: UploadFile[]) => {
+      fn: (fileList: UploadFile[]) => {
         const filterFiles = fileList.filter(w => ['application/pdf', 'video/mp4'].indexOf(w.type) >= 0);
         if (filterFiles.length !== fileList.length) {
           this.msg.error(`包含文件格式不正确，只支持 mp4 与 pdf 格式`);
@@ -45,7 +45,8 @@ export class TCoursewareComponent implements OnInit, OnChanges {
   constructor(
     private nodeService: TNodeService,
     private msg: NzMessageService
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
   }
@@ -63,8 +64,10 @@ export class TCoursewareComponent implements OnInit, OnChanges {
   updateCoursewares() {
     this.nodeService.getCoursewares(this.course_id, this.mind_id, this.node_id).subscribe(r => {
       this.courseware_names = r;
-      this.pdf_names = r.filter(w => w.endsWith('.pdf'));
-      this.mp4_names = r.filter(w => w.endsWith('.mp4'));
+      if (r.filter.length > 1) {
+        this.pdf_names = r.filter(w => w.endsWith('.pdf'));
+        this.mp4_names = r.filter(w => w.endsWith('.mp4'));
+      }
     });
   }
 
@@ -72,13 +75,13 @@ export class TCoursewareComponent implements OnInit, OnChanges {
   download(file_name: string) {
     this.nodeService.requestCoursewareBlob(
       this.course_id, this.mind_id, this.node_id, file_name).subscribe(
-        r => {
-          this.nodeService.downFile(r, file_name);
-        });
+      r => {
+        this.nodeService.downFile(r, file_name);
+      });
   }
 
   // 处理文件上传之后的消息
-  handleChange({ file, fileList }): void {
+  handleChange({file, fileList}): void {
     const status = file.status;
     if (status !== 'uploading') {
       console.log(file, fileList);
@@ -92,14 +95,14 @@ export class TCoursewareComponent implements OnInit, OnChanges {
   }
 
   loadPdf(file_name: string) {
-    const apiUrl =  environment.apiUrl;
+    const apiUrl = environment.apiUrl;
     this.pdf_url = `${apiUrl}view_courseware/${this.course_id}/${this.mind_id}/${this.node_id}/${file_name}`;
     this.page = 1;
     this.msg.info('请在下方查看');
   }
 
   loadMp4(file_name: string) {
-    const apiUrl =  environment.apiUrl;
+    const apiUrl = environment.apiUrl;
     this.mp4_url = `${apiUrl}view_courseware/${this.course_id}/${this.mind_id}/${this.node_id}/${file_name}`;
     this.msg.info('请在下方查看');
   }
