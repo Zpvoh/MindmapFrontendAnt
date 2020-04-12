@@ -62,14 +62,16 @@
 
   </nz-collapse-panel>
 
-  <!--薄弱环节面板-->
+  <!--节点情况面板-->
   <nz-collapse-panel
-    [nzHeader]="'薄弱环节判定'"
+    [nzHeader]="'节点情况分析'"
     [nzActive]="false"
     [nzDisabled]="false">
 
     <!--薄弱环节列表-->
     <ol>
+        <div><b>该节点掌握程度排名为第{{rank}}</b></div>
+      <div><b>做题比为{{relevance}}</b></div>
     </ol>
 
 

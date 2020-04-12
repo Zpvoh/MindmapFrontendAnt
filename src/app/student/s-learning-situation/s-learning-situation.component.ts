@@ -16,6 +16,9 @@ export class SLearningSituationComponent implements OnInit, OnChanges {
   stuMultiples: StuMultiple[];
   stuShorts: StuShort[];
   stuJudges: StuJudge[];
+  rank: number;
+  score: number;
+  relevance: number;
 
   @Input() course_id: string; // 与上层组件中course绑定
   @Input() mind_id: string; // 与上层组件中选中的mindMap绑定
@@ -32,6 +35,25 @@ export class SLearningSituationComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     this.updateHomework();
+    this.updateLearningSituation();
+  }
+
+  updateLearningSituation() {
+    const recommendStr = JSON.parse(localStorage.getItem('recommendation_list'));
+    // this.rank = Number(recommendStr['']);
+    for (const v of recommendStr['sortedVertices']) {
+      if (v['vertex']['id'] === this.node_id) {
+        this.rank = Math.floor((1 - Number(v['value'])) * (recommendStr['sortedVertices'].length - 1) + 1);
+        break;
+      }
+    }
+
+    for (const i in recommendStr['evaluationList']['relevance']) {
+      if (recommendStr['evaluationList']['precursorGraph']['vertices'][i]['id'] === this.node_id) {
+        this.relevance = recommendStr['evaluationList']['relevance'][i];
+        break;
+      }
+    }
   }
 
   updateHomework() {

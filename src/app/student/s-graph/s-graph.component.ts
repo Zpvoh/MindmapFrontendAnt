@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {NzModalService} from 'ng-zorro-antd';
 import {SMindmapService} from '../s-mindmap.service';
+import {SRecommendationService} from '../s-recommendation.service';
 import cytoscape from 'cytoscape';
 import $ from 'jquery';
 import contextMenus from 'cytoscape-context-menus';
@@ -8,6 +9,7 @@ import 'cytoscape-context-menus/cytoscape-context-menus.css';
 import cose from 'cytoscape-cose-bilkent';
 import edgehandles from 'cytoscape-edgehandles';
 import {ColorPickerService, Rgba} from 'ngx-color-picker';
+import {forEach} from '@angular/router/src/utils/collection';
 
 @Component({
   selector: 'app-s-graph',
@@ -67,11 +69,12 @@ export class SGraphComponent implements OnInit {
   menuOptions = {};
   edgeHandleOptions = {};
   selectedIndex = 0;
-  typeOfNewEdge = 'super-sub';
+  recommendationList = undefined;
 
   constructor(
     private modalService: NzModalService,
     private mindmapService: SMindmapService,
+    private recommendationService: SRecommendationService,
     private colorService: ColorPickerService
   ) {
   }
@@ -80,13 +83,12 @@ export class SGraphComponent implements OnInit {
     this.numOfNodes = 0;
     this.flag = true;
     cytoscape.use(cose);
-    cytoscape.use(edgehandles);
     cytoscape.use(contextMenus, $);
     // register extension
   }
 
   ngAfterViewInit() {
-    this.readGraph();
+    // this.readGraph();
 
     this.cy = cytoscape({
 
@@ -116,6 +118,20 @@ export class SGraphComponent implements OnInit {
             'font-size': 'data(labelSize)',
             color: 'rgba(255, 245, 247, 1)',
             'background-color': 'rgba(254, 67, 101, 1)',
+            shape: 'round-rectangle',
+            width: 'data(width)',
+            height: 'data(weight)'
+          }
+        },
+        {
+          selector: 'node[weight][color]',
+          style: {
+            label: 'data(name)',
+            'text-halign': 'center',
+            'text-valign': 'center',
+            'font-size': 'data(labelSize)',
+            color: 'rgba(255, 245, 247, 1)',
+            'background-color': 'data(color)',
             shape: 'round-rectangle',
             width: 'data(width)',
             height: 'data(weight)'
@@ -229,82 +245,8 @@ export class SGraphComponent implements OnInit {
     });
     const outside = this;
 
-    const removeEle = function A(target) {
-      if (target.group() === 'edges') {
-        const edgeTarget = outside.cy.$id(target.data('target'));
-        edgeTarget.data('parentID', '');
-        console.log('edgeTarget', edgeTarget);
-      } else if (target.group() === 'nodes') {
-        const judgerEdges = ele => {
-          return ele.data.source === target.data('id') || ele.data.target === target.data('id');
-        };
-        let edge = outside.elements.find(judgerEdges);
-        while (edge !== undefined) {
-          A(outside.cy.$id(edge.data.id));
-          edge = outside.elements.find(judgerEdges);
-          console.log(outside.elements);
-        }
-      }
-      const judgerSelf = ele => {
-        return ele.data.id === target.data('id');
-      };
-      const eleIndex = outside.elements.findIndex(judgerSelf);
-      outside.elements.splice(eleIndex, 1);
-      outside.cy.remove(target);
-
-      outside.isChanged = true;
-      outside.modifyContentEvent.emit(outside.isChanged);
-    };
-    const addFunction = event => {
-      const evtTarget = event.target;
-      console.log(event);
-
-      if (evtTarget === outside.cy) {
-        const nameO = prompt('Give new node a name', 'Node');
-        if (nameO === null) {
-          return;
-        }
-        const weightO = 50;
-        const labelSizeO = weightO / 4;
-        const widthO = labelSizeO * nameO.length + 60;
-        const newNode = {
-          group: 'nodes',
-          data: {
-            id: outside.numOfNodes,
-            name: nameO,
-            weight: weightO,
-            width: widthO,
-            labelSize: labelSizeO,
-            parentID: '',
-            flag: true
-          },
-          position: {x: event.position.x, y: event.position.y}
-        };
-        outside.cy.add(newNode);
-        outside.elements.push(newNode);
-        outside.numOfNodes++;
-        outside.isChanged = true;
-        outside.modifyContentEvent.emit(this.isChanged);
-      }
-      this.saveGraph();
-    };
-    const removeFunction = event => {
-      // target holds a reference to the originator
-      // of the event (core or element)
-      const evtTarget = event.target;
-
-      if (evtTarget === outside.cy) {
-        console.log('event', event);
-      } else {
-        console.log(event);
-        console.log('evtTarget', evtTarget.group());
-        removeEle(evtTarget);
-      }
-
-      this.saveGraph();
-    };
     const reorganizeFunction = event => {
-      const layout = outside.cy.layout({
+      const lay = outside.cy.layout({
         name: 'cose-bilkent',
         animate: 'end',
         animationEasing: 'ease-out',
@@ -312,80 +254,9 @@ export class SGraphComponent implements OnInit {
         randomize: true
       });
 
-      layout.run();
-    };
-    const saveFunction = event => {
-      reorganizeFunction(event);
-      // outside.saveGraph();
-      outside.save();
-    };
-    const renameFunction = event => {
-      const evtTarget = event.target;
-
-      if (evtTarget !== outside.cy) {
-        const nameO = prompt('Give node a new name', evtTarget.data('name'));
-        if (nameO === null) {
-          return;
-        }
-
-        const labelSizeO = evtTarget.data('weight') / 4;
-        const widthO = labelSizeO * nameO.length + 60;
-        evtTarget.data('name', nameO);
-        evtTarget.data('labelSize', labelSizeO);
-        evtTarget.data('width', widthO);
-        outside.isChanged = true;
-        outside.modifyContentEvent.emit(this.isChanged);
-      }
-      this.saveGraph();
-    };
-    const addParentFunction = event => {
-      const evtTarget = event.target;
-      console.log(event);
-
-      if (evtTarget.isNode()) {
-        const nameO = prompt('Give new node a name', 'Node');
-        if (nameO === null) {
-          return;
-        }
-        const weightO = 50;
-        const labelSizeO = weightO / 4;
-        const widthO = labelSizeO * nameO.length + 60;
-        const newNode = {
-          group: 'nodes',
-          data: {
-            id: outside.numOfNodes,
-            name: nameO,
-            weight: weightO,
-            width: widthO,
-            labelSize: labelSizeO,
-            parentID: '',
-            isParent: true,
-            flag: true
-          }
-        };
-        const parentO = outside.cy.add(newNode)[0];
-        outside.elements.push(newNode);
-        const selectedCollection = outside.cy.$(':selected');
-        selectedCollection.move({parent: outside.numOfNodes});
-        outside.numOfNodes++;
-      }
-      this.saveGraph();
-    };
-    const findPreSucPath = function F(src, current) {
-      let edgesOut = current.outgoers('edge[type="pre-suc"]');
-      if (src === current) {
-        return true;
-      }
-
-      for (let i = 0; i < edgesOut.length; i++) {
-        let result = F(src, edgesOut[i].target());
-        if (result === true) {
-          return true;
-        }
-      }
+      lay.run();
     };
 
-    // this.cy.on('taphold', addFunction);
     this.cy.on('select', event => {
       const evtTarget = event.target;
       if (evtTarget.isNode()) {
@@ -438,140 +309,8 @@ export class SGraphComponent implements OnInit {
         // add class names to this list
       ]
     };
-    this.edgeHandleOptions = {
-      preview: true, // whether to show added edges preview before releasing selection
-      hoverDelay: 150, // time spent hovering over a target node before it is considered selected
-      handleNodes: 'node', // selector/filter function for whether edges can be made from a given node
-      snap: false, // when enabled, the edge can be drawn by just moving close to a target node
-      snapThreshold: 50, // the target node must be less than or equal to this many pixels away from the cursor/finger
-      snapFrequency: 15, // the number of times per second (Hz) that snap checks done (lower is less expensive)
-      noEdgeEventsInDraw: false, // set events:no to edges during draws, prevents mouseouts on compounds
-      disableBrowserGestures: true, // during an edge drawing gesture, disable browser gestures such as
-      // two-finger trackpad swipe and pinch-to-zoom
-      handlePosition: function (node) {
-        return 'middle top'; // sets the position of the handle in the format of "X-AXIS Y-AXIS" such as "left top", "middle top"
-      },
-      handleInDrawMode: false, // whether to show the handle in draw mode
-      edgeType: function (sourceNode, targetNode) {
-        // can return 'flat' for flat edges between nodes or 'node' for intermediate node between them
-        // returning null/undefined means an edge can't be added between the two nodes
-        return 'flat';
-      },
-      loopAllowed: function (node) {
-        // for the specified node, return whether edges from itself to itself are allowed
-        return false;
-      },
-      nodeLoopOffset: -50, // offset for edgeType: 'node' loops
-      nodeParams: function (sourceNode, targetNode) {
-        // for edges between the specified source and target
-        // return element object to be passed to cy.add() for intermediary node
-        return {};
-      },
-      edgeParams: function (sourceNode, targetNode, i) {
-        // for edges between the specified source and target
-        // return element object to be passed to cy.add() for edge
-        // NB: i indicates edge index in case of edgeType: 'node'
-        return {};
-      },
-      ghostEdgeParams: function () {
-        // return element object to be passed to cy.add() for the ghost edge
-        // (default classes are always added for you)
-        return {};
-      },
-      show: function (sourceNode) {
-        // fired when handle is shown
-      },
-      hide: function (sourceNode) {
-        // fired when the handle is hidden
-      },
-      start: function (sourceNode) {
-        // fired when edgehandles interaction starts (drag on handle)
-      },
-      complete: function (sourceNode, targetNode, addedEles) {
-        let codirectedEdges = addedEles.codirectedEdges();
-        if (codirectedEdges.length > 0) {
-          for (let i = 0; i < codirectedEdges.length; i++) {
-            if (codirectedEdges[i].data('type') === outside.typeOfNewEdge) {
-              outside.cy.remove(addedEles);
-              return;
-            }
-          }
-        }
-        if (outside.typeOfNewEdge === 'pre-suc') {
-          // 判断是否会因为新边形成环
-          const hasCircle = findPreSucPath(sourceNode, targetNode);
-
-          if (hasCircle) {
-            outside.cy.remove(addedEles);
-            return;
-          }
-          // targetNode.data('parentID', sourceNode.data('id'));
-          addedEles.data('name', '前序知识');
-        } else if (outside.typeOfNewEdge === 'super-sub') {
-          let root = sourceNode;
-          while (root.data('parentID') !== '') {
-            root = outside.cy.getElementById(root.data('parentID'));
-          }
-          console.log('root', root);
-          if (addedEles.parallelEdges().length > 1 || targetNode.data('parentID') !== '' || root === targetNode) {
-            outside.cy.remove(addedEles);
-            return;
-          }
-          targetNode.data('parentID', sourceNode.data('id'));
-          addedEles.data('name', '包含');
-        } else if (outside.typeOfNewEdge === 'ref') {
-          const nameO = prompt('Give new reference a name', 'Relation');
-          if (nameO === null) {
-            outside.cy.remove(addedEles);
-            return;
-          }
-          addedEles.data('name', nameO);
-        }
-        else if (outside.typeOfNewEdge === 'synonym') {
-          addedEles.data('name', '同义知识');
-        }
-        else if (outside.typeOfNewEdge === 'antonym') {
-          addedEles.data('name', '反义知识');
-        }
-        addedEles.data('type', outside.typeOfNewEdge);
-        addedEles.data('weight', 10);
-        outside.elements.push({
-          group: 'edges',
-          data: addedEles.data(),
-          position: addedEles.position()
-        });
-        outside.isChanged = true;
-        outside.modifyContentEvent.emit(outside.isChanged);
-        outside.saveGraph();
-      },
-      stop: function (sourceNode) {
-        // fired when edgehandles interaction is stopped (either complete with added edges or incomplete)
-      },
-      cancel: function (sourceNode, cancelledTargets) {
-        // fired when edgehandles are cancelled (incomplete gesture)
-      },
-      hoverover: function (sourceNode, targetNode) {
-        // fired when a target is hovered
-      },
-      hoverout: function (sourceNode, targetNode) {
-        // fired when a target isn't hovered anymore
-      },
-      previewon: function (sourceNode, targetNode, previewEles) {
-        // fired when preview is shown
-      },
-      previewoff: function (sourceNode, targetNode, previewEles) {
-        // fired when preview is hidden
-      },
-      drawon: function () {
-        // fired when draw mode enabled
-      },
-      drawoff: function () {
-        // fired when draw mode disabled
-      }
-    };
 
     const instance = this.cy.contextMenus(this.menuOptions);
-    const edgehandler = this.cy.edgehandles(this.edgeHandleOptions);
 
     const layout = this.cy.layout({
       name: 'cose-bilkent',
@@ -589,17 +328,20 @@ export class SGraphComponent implements OnInit {
     this.readGraph();
   }
 
-  switchRelationship() {
+  switchMode() {
     if (this.selectedIndex === 0) {
-      this.typeOfNewEdge = 'super-sub';
+      const eles = this.cy.nodes();
+      eles.data('color', 'rgba(254, 67, 101, 1)');
     } else if (this.selectedIndex === 1) {
-      this.typeOfNewEdge = 'pre-suc';
+      for (let i = 0; i < this.recommendationList['evaluationList']['precursorGraph']['vertices'].length; i++) {
+        const ele = this.cy.getElementById(this.recommendationList['evaluationList']['precursorGraph']['vertices'][i]['id']);
+        ele.data('color', this.recommendationService.getColor(this.recommendationList['evaluationList']['values'][i]));
+      }
     } else if (this.selectedIndex === 2) {
-      this.typeOfNewEdge = 'synonym';
-    } else if (this.selectedIndex === 3) {
-      this.typeOfNewEdge = 'antonym';
-    } else if (this.selectedIndex === 4) {
-      this.typeOfNewEdge = 'ref';
+      for (let i = 0; i < this.recommendationList['sortedVertices'].length; i++) {
+        const ele = this.cy.getElementById(this.recommendationList['sortedVertices'][i]['vertex']['id']);
+        ele.data('color', this.recommendationService.getColor(this.recommendationList['sortedVertices'][i]['value']));
+      }
     }
   }
 
@@ -661,10 +403,21 @@ export class SGraphComponent implements OnInit {
       outside.graphFormat = mindStr['format'];
       outside.elements = mindStr['jsonData'];
       localStorage.setItem('cy-elements', JSON.stringify(outside.elements));
-      console.log(outside.elements);
       this.cy.add(this.elements);
       this.changeLayout();
 
+    });
+
+    this.recommendationService.getRecommendation(this.course_id,
+      this.mindmap_id,
+      window.sessionStorage.getItem('user_name')).subscribe(recommendStr => {
+      this.recommendationList = recommendStr;
+      localStorage.setItem('recommendation_list', JSON.stringify(recommendStr));
+      console.log(this.recommendationList);
+      // for (let i = 0; i < recommendStr['sortedVertices'].length; i++) {
+      //   const ele = this.cy.getElementById(recommendStr['sortedVertices'][i]['vertex']['id']);
+      //   ele.data('color', this.recommendationService.getColor(recommendStr['sortedVertices'][i]['value']));
+      // }
     });
   }
 
