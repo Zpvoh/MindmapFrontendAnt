@@ -27,9 +27,9 @@ export class SNodeService {
   }
 
   // 学生获取简答题列表
-  getShort(course_id: string, mindmap_id: string, node_id: string, stu_name: string): Observable<ShortQuestion[]> {
+  getShort(course_id: string, mindmap_id: string, node_id: string, stu_name: string): Observable<StuShort[]> {
     this.tempUrl = this.baseUrl + 'shorts_student/' + course_id + '/' + mindmap_id + '/' + node_id + '/' + stu_name;
-    return this.http.get<ShortQuestion[]>(this.tempUrl);
+    return this.http.get<StuShort[]>(this.tempUrl);
   }
 
   // 学生获取选择题列表

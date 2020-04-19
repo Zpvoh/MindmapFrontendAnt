@@ -14,3 +14,7 @@ div{
   margin-right: 100px;
   border-bottom-width: medium;
 }
+
+canvas{
+  border-bottom-width: medium;
+}

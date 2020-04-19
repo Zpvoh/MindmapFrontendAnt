@@ -426,9 +426,8 @@ export class TMindmapCytoComponent implements OnInit {
       menuItems: [
         {
           id: 'remove', // ID of menu item
-          content: 'remove', // Display content of menu item
-          tooltipText: 'remove', // Tooltip text for menu item
-          image: {src: 'remove.svg', width: 12, height: 12, x: 6, y: 4}, // menu icon
+          content: '删除', // Display content of menu item
+          tooltipText: '删除节点或关系', // Tooltip text for menu item
           selector: 'node, edge',
           onClickFunction: removeFunction,
           disabled: false, // Whether the item will be created as disabled
@@ -438,47 +437,36 @@ export class TMindmapCytoComponent implements OnInit {
         },
         {
           id: 'add-node',
-          content: 'add node',
-          tooltipText: 'add node',
-          image: {src: 'add.svg', width: 12, height: 12, x: 6, y: 4},
-          selector: 'node',
+          content: '增加节点',
+          tooltipText: '增加节点',
+          selector: '',
           coreAsWell: true,
           onClickFunction: addFunction
         },
         {
           id: 'rename-node',
-          content: 'rename node',
-          tooltipText: 'rename node',
+          content: '重命名节点',
+          tooltipText: '对节点进行重命名',
           selector: 'node',
           coreAsWell: false,
           onClickFunction: renameFunction
         },
         {
           id: 'reorganize-node',
-          content: 'reorganize',
-          tooltipText: 'reorganize',
-          image: {src: 'add.svg', width: 12, height: 12, x: 6, y: 4},
+          content: '重新组织',
+          tooltipText: '重新组织知识图谱展示方式',
           selector: '',
           coreAsWell: true,
           onClickFunction: reorganizeFunction
         },
         {
           id: 'save-node',
-          content: 'save graph',
-          tooltipText: 'save',
-          image: {src: 'add.svg', width: 12, height: 12, x: 6, y: 4},
+          content: '保存知识图谱',
+          tooltipText: '保存知识图谱至服务器',
           selector: '',
           coreAsWell: true,
           onClickFunction: saveFunction
-        },
-        // {
-        //   id: 'add-parent',
-        //   content: 'add parent',
-        //   tooltipText: 'add parent',
-        //   selector: 'node[weight]:selected',
-        //   coreAsWell: false,
-        //   onClickFunction: addParentFunction
-        // }
+        }
       ],
       // css classes that menu items will have
       menuItemClasses: [

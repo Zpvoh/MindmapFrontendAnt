@@ -11,13 +11,69 @@
       </nz-tab>
 
       <!--学情分析模式-->
-      <nz-tab [nzTitle]="'学情分析模式'">
+      <nz-tab [nzTitle]="'学情分析模式' " [nzDisabled]="isLoadingTest">
       </nz-tab>
 
       <!--薄弱环节分析模式-->
-      <nz-tab [nzTitle]="'薄弱环节分析模式'">
+      <nz-tab [nzTitle]="'薄弱环节分析模式' " [nzDisabled]="isLoadingTest">
       </nz-tab>
     </nz-tabset>
   </div>
+  <div>
+    <button nz-button nzType="default" (click)="openTestModal()" [nzLoading]="isLoadingTest" #testButton><i nz-icon nzType="file-exclamation"></i>测试当前学习水平</button>
+  </div>
   <div id="cy"></div>
 </div>
+
+<ng-template #testTitle>
+  <span>测试</span>
+</ng-template>
+
+<ng-template #testMultipleContent>
+  <form>
+    <div class="title item"><b>{{stuMultiples[0].title}}</b></div>
+    <div class="options item">
+      <div>
+        <span>A. </span><span class="optionA"> {{stuMultiples[0].optionA}}</span>
+      </div>
+      <div>
+        <span>B. </span><span class="optionB"> {{stuMultiples[0].optionB}}</span>
+      </div>
+      <div>
+        <span>C. </span><span class="optionC"> {{stuMultiples[0].optionC}}</span>
+      </div>
+      <div>
+        <span>D. </span><span class="optionD"> {{stuMultiples[0].optionD}}</span>
+      </div>
+    </div>
+
+    <nz-radio-group [(ngModel)]="stuMultiples[0].answer" name="stuAnswer">
+      <label nz-radio nzValue="A">A</label>
+      <label nz-radio nzValue="B">B</label>
+      <label nz-radio nzValue="C">C</label>
+      <label nz-radio nzValue="D">D</label>
+    </nz-radio-group>
+  </form>
+</ng-template>
+
+<ng-template #testShortContent>
+  <form>
+    <div class="title item"><b>{{stuShorts[0].title}}</b></div>
+    <textarea rows="4" style="max-width: 500px" nz-input name="stuAnswer" [(ngModel)]="stuShorts[0].answer"></textarea>
+  </form>
+</ng-template>
+
+<ng-template #testJudgeContent>
+  <form>
+    <div class="title item"><b>{{stuJudges[0].title}}</b></div>
+    <nz-radio-group [(ngModel)]="stuJudges[0].answer" name="stuAnswer">
+      <label nz-radio nzValue="T">正确</label>
+      <label nz-radio nzValue="F">错误</label>
+    </nz-radio-group>
+  </form>
+</ng-template>
+
+<ng-template #testFooter>
+  <button nz-button nzType="default" (click)="reevaluateGraph()" [nzLoading]="isLoadingRecommendation"><i nz-icon nzType="vertical-align-top" nzTheme="outline"></i>提交已答题目</button>
+  <button nz-button nzType="primary" (click)="nextTestAnswer()" [nzLoading]="isLoadingNext">下一题<i nz-icon nzType="caret-right" nzTheme="outline"></i></button>
+</ng-template>

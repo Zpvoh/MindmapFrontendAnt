@@ -5,7 +5,7 @@
 
     <ul nz-menu [nzMode]="'inline'" style="height:100%;">
       <li nz-submenu>
-        <span title><i nz-icon type="picture"></i>思维导图</span>
+        <span title><i nz-icon type="picture"></i>知识图谱</span>
         <ul>
 
           <!-- 思维导图操作 -->
@@ -13,14 +13,14 @@
             <span title>思维导图操作</span>
             <ul>
               <li nz-submenu>
-                <span title><i nz-icon type="picture"></i>切换思维导图</span>
+                <span title><i nz-icon type="picture"></i>切换知识图谱</span>
 
                 <!-- 思维导图列表 -->
                 <ul>
                   <li nz-menu-item *ngFor="let mindmap of mindmapList" (click)="switchMindmap(mindmap)">{{mindmap['name']}}</li>
                 </ul>
               </li>
-              <li nz-menu-item (click)="mindmapComponent.screen_shot();">思维导图截图</li>
+              <li nz-menu-item (click)="mindmapComponent.screen_shot();">知识图谱截图</li>
             </ul>
           </li>
 

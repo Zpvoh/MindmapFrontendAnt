@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {NzModalService} from 'ng-zorro-antd';
+import {Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild} from '@angular/core';
+import {NzButtonComponent, NzModalService} from 'ng-zorro-antd';
 import {SMindmapService} from '../s-mindmap.service';
 import {SRecommendationService} from '../s-recommendation.service';
 import cytoscape from 'cytoscape';
@@ -10,6 +10,10 @@ import cose from 'cytoscape-cose-bilkent';
 import edgehandles from 'cytoscape-edgehandles';
 import {ColorPickerService, Rgba} from 'ngx-color-picker';
 import {forEach} from '@angular/router/src/utils/collection';
+import {StuMultiple} from '../stu-multiple';
+import {StuShort} from '../stu-short';
+import {StuJudge} from '../stu-judge';
+import {SNodeService} from '../s-node.service';
 
 @Component({
   selector: 'app-s-graph',
@@ -19,6 +23,21 @@ import {forEach} from '@angular/router/src/utils/collection';
 export class SGraphComponent implements OnInit {
 
   flag: boolean;
+
+  @ViewChild('testTitle')
+  testTitle: TemplateRef<{}>;
+
+  @ViewChild('testMultipleContent')
+  testMultipleContent: TemplateRef<{}>;
+
+  @ViewChild('testJudgeContent')
+  testJudgeContent: TemplateRef<{}>;
+
+  @ViewChild('testShortContent')
+  testShortContent: TemplateRef<{}>;
+
+  @ViewChild('testFooter')
+  testFooter: TemplateRef<{}>;
 
   course_id: string; // 课程id
   @Input()
@@ -60,6 +79,18 @@ export class SGraphComponent implements OnInit {
 
   showBarCharts = false;
 
+  stuMultiples: StuMultiple[];
+  stuShorts: StuShort[];
+  stuJudges: StuJudge[];
+  currentQuestion: any;
+  currentQuestionType: string;
+
+  testModal = undefined;
+  isLoadingTest = false;
+  isLoadingNext = false;
+  isLoadingRecommendation = false;
+  finishNumber = 0;
+
   cy = cytoscape({});
   graphMeta = {};
   graphFormat = '';
@@ -70,11 +101,13 @@ export class SGraphComponent implements OnInit {
   edgeHandleOptions = {};
   selectedIndex = 0;
   recommendationList = undefined;
+  testList = undefined;
 
   constructor(
     private modalService: NzModalService,
     private mindmapService: SMindmapService,
     private recommendationService: SRecommendationService,
+    private nodeService: SNodeService,
     private colorService: ColorPickerService
   ) {
   }
@@ -292,9 +325,8 @@ export class SGraphComponent implements OnInit {
       menuItems: [
         {
           id: 'reorganize-node',
-          content: 'reorganize',
-          tooltipText: 'reorganize',
-          image: {src: 'add.svg', width: 12, height: 12, x: 6, y: 4},
+          content: '重新组织图谱',
+          tooltipText: '重新组织图谱',
           selector: '',
           coreAsWell: true,
           onClickFunction: reorganizeFunction
@@ -342,6 +374,230 @@ export class SGraphComponent implements OnInit {
         const ele = this.cy.getElementById(this.recommendationList['sortedVertices'][i]['vertex']['id']);
         ele.data('color', this.recommendationService.getColor(this.recommendationList['sortedVertices'][i]['value']));
       }
+    }
+  }
+
+  openTestModal() {
+    this.getQuestions();
+  }
+
+  fetchOneQuestion() {
+    if (this.stuMultiples && this.stuMultiples.length !== 0) {
+      this.currentQuestion = this.stuMultiples[0];
+      this.currentQuestionType = 'multiple';
+      this.testModal = this.modalService.create({
+        nzTitle: this.testTitle,
+        nzContent: this.testMultipleContent,
+        nzFooter: this.testFooter,
+        nzMaskClosable: false,
+        nzClosable: false
+      });
+    } else if (this.stuJudges && this.stuJudges.length !== 0) {
+      this.currentQuestion = this.stuJudges[0];
+      this.currentQuestionType = 'judge';
+      this.testModal = this.modalService.create({
+        nzTitle: this.testTitle,
+        nzContent: this.testJudgeContent,
+        nzFooter: this.testFooter,
+        nzMaskClosable: false,
+        nzClosable: false
+      });
+    } else if (this.stuShorts && this.stuShorts.length !== 0) {
+      this.currentQuestion = this.stuShorts[0];
+      this.currentQuestionType = 'short';
+      this.testModal = this.modalService.create({
+        nzTitle: this.testTitle,
+        nzContent: this.testShortContent,
+        nzFooter: this.testFooter,
+        nzMaskClosable: false,
+        nzClosable: false
+      });
+    } else {
+      this.testList.splice(0, 1);
+      this.getQuestions();
+    }
+  }
+
+  nextTestAnswer() {
+    console.log(this.currentQuestion);
+    if (this.currentQuestionType === 'multiple') {
+      this.submitMultiple(this.currentQuestion);
+    } else if (this.currentQuestionType === 'judge') {
+      this.submitJudge(this.currentQuestion);
+    } else if (this.currentQuestionType === 'short') {
+      this.submitShort(this.currentQuestion);
+    }
+  }
+
+  reevaluateGraph() {
+    this.isLoadingRecommendation = true;
+    this.recommendationService.getRecommendation(this.course_id,
+      this.mindmap_id,
+      window.sessionStorage.getItem('user_name')).subscribe(recommendStr => {
+      this.isLoadingRecommendation = false;
+      this.recommendationList = recommendStr[0];
+      this.testList = recommendStr[1];
+      localStorage.setItem('recommendation_list', JSON.stringify(recommendStr[0]));
+      localStorage.setItem('test_list', JSON.stringify(recommendStr[1]));
+      console.log(this.recommendationList);
+      console.log(this.testList);
+      this.testModal.destroy();
+    });
+  }
+
+  getQuestions() {
+    const node_id = this.testList[0]['vertex']['id'];
+    window.sessionStorage.setItem('test_node', node_id);
+
+    if (this.stuJudges === undefined || this.stuJudges.length === 0) {
+      this.isLoadingTest = true;
+      this.nodeService.getStuJudge(this.course_id,
+        this.mindmap_id,
+        node_id,
+        window.sessionStorage.getItem('user_name')).subscribe(judges => {
+        this.stuJudges = judges;
+        let i = 0;
+        while (i < this.stuJudges.length) {
+          if (this.stuJudges[i].answer !== '') {
+            this.stuJudges.splice(i, 1);
+          } else {
+            i++;
+          }
+        }
+
+        console.log(this.stuJudges);
+        this.isLoadingTest = false;
+        this.finishNumber++;
+        if (this.finishNumber === 3) {
+          this.finishNumber = 0;
+          this.fetchOneQuestion();
+        }
+      });
+    }
+
+    if (this.stuShorts === undefined || this.stuShorts.length === 0) {
+      this.isLoadingTest = true;
+      this.nodeService.getShort(this.course_id,
+        this.mindmap_id,
+        node_id,
+        window.sessionStorage.getItem('user_name')).subscribe(shorts => {
+        this.stuShorts = shorts;
+        let i = 0;
+        while (i < this.stuShorts.length) {
+          if (this.stuShorts[i].answer !== '') {
+            this.stuShorts.splice(i, 1);
+          } else {
+            i++;
+          }
+        }
+
+        console.log(this.stuShorts);
+        this.isLoadingTest = false;
+        this.finishNumber++;
+        if (this.finishNumber === 3) {
+          this.finishNumber = 0;
+          this.fetchOneQuestion();
+        }
+      });
+    }
+
+    if (this.stuMultiples === undefined || this.stuMultiples.length === 0) {
+      this.isLoadingTest = true;
+      this.nodeService.getStuMultiple(this.course_id,
+        this.mindmap_id,
+        node_id,
+        window.sessionStorage.getItem('user_name')).subscribe(multiples => {
+        this.stuMultiples = multiples;
+        let i = 0;
+        while (i < this.stuMultiples.length) {
+          if (this.stuMultiples[i].answer !== '') {
+            this.stuMultiples.splice(i, 1);
+          } else {
+            i++;
+          }
+        }
+
+        console.log(this.stuMultiples);
+        this.isLoadingTest = false;
+        this.finishNumber++;
+        if (this.finishNumber === 3) {
+          this.finishNumber = 0;
+          this.fetchOneQuestion();
+        }
+      });
+    }
+  }
+
+  // 提交选择题
+  submitMultiple(stuMultiple: StuMultiple) {
+    this.isLoadingNext = true;
+    this.nodeService.answerMultiple(
+      this.course_id,
+      this.mindmap_id,
+      window.sessionStorage.getItem('test_node'),
+      window.sessionStorage.getItem('user_name'),
+      stuMultiple).subscribe(
+      value => {
+        this.checkSubmit(value['success']);
+        this.isLoadingNext = false;
+        stuMultiple.submitted = true;
+        this.stuMultiples.splice(0, 1);
+        this.testModal.destroy();
+        this.fetchOneQuestion();
+      });
+  }
+
+  // 提交简答题
+  submitShort(stuShort: StuShort) {
+    this.isLoadingNext = true;
+    this.nodeService.answerShort(
+      this.course_id,
+      this.mindmap_id,
+      window.sessionStorage.getItem('test_node'),
+      window.sessionStorage.getItem('user_name'),
+      stuShort).subscribe(
+      value => {
+        this.checkSubmit(value['success']);
+        this.isLoadingNext = false;
+        stuShort.submitted = true;
+        this.stuShorts.splice(0, 1);
+        this.testModal.destroy();
+        this.fetchOneQuestion();
+      }
+    );
+  }
+
+  // 提交判断题
+  submitJudge(stuJudge: StuJudge) {
+    this.isLoadingNext = true;
+    this.nodeService.answerJudge(
+      this.course_id,
+      this.mindmap_id,
+      window.sessionStorage.getItem('test_node'),
+      window.sessionStorage.getItem('user_name'),
+      stuJudge).subscribe(
+      value => {
+        this.checkSubmit(value['success']);
+        this.isLoadingNext = false;
+        stuJudge.submitted = true;
+        this.stuJudges.splice(0, 1);
+        this.testModal.destroy();
+        this.fetchOneQuestion();
+      });
+  }
+
+  // 检查提交
+  checkSubmit(value) {
+    if (!value) {
+      this.isLoadingNext = false;
+      const inModal = this.modalService.error(
+        {
+          nzTitle: '提交失败',
+          nzContent: '未知错误'
+        });
+      window.setTimeout(() => {
+        inModal.destroy();
+      }, 2000);
     }
   }
 
@@ -408,16 +664,17 @@ export class SGraphComponent implements OnInit {
 
     });
 
+    this.isLoadingTest = true;
     this.recommendationService.getRecommendation(this.course_id,
       this.mindmap_id,
       window.sessionStorage.getItem('user_name')).subscribe(recommendStr => {
-      this.recommendationList = recommendStr;
-      localStorage.setItem('recommendation_list', JSON.stringify(recommendStr));
+      this.isLoadingTest = false;
+      this.recommendationList = recommendStr[0];
+      this.testList = recommendStr[1];
+      localStorage.setItem('recommendation_list', JSON.stringify(recommendStr[0]));
+      localStorage.setItem('test_list', JSON.stringify(recommendStr[1]));
       console.log(this.recommendationList);
-      // for (let i = 0; i < recommendStr['sortedVertices'].length; i++) {
-      //   const ele = this.cy.getElementById(recommendStr['sortedVertices'][i]['vertex']['id']);
-      //   ele.data('color', this.recommendationService.getColor(recommendStr['sortedVertices'][i]['value']));
-      // }
+      console.log(this.testList);
     });
   }
 
