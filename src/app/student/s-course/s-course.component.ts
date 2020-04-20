@@ -4,7 +4,7 @@ import {Mindmap} from '../../mindmap';
 import {NzModalService} from 'ng-zorro-antd';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SMindmapComponent} from '../s-mindmap/s-mindmap.component';
-import {SMindmapCytoComponent} from '../s-mindmap-cyto/s-mindmap-cyto.component';
+import {SGraphComponent} from '../s-graph/s-graph.component';
 import {SResourceComponent} from '../s-resource/s-resource.component';
 import {SCoursewareComponent} from '../s-courseware/s-courseware.component';
 import {SHomeworkComponent} from '../s-homework/s-homework.component';
@@ -16,11 +16,8 @@ import {SMindmapService} from '../s-mindmap.service';
   styleUrls: ['./s-course.component.css']
 })
 export class SCourseComponent implements OnInit {
-  @ViewChild(SMindmapComponent)
-  mindmapComponent: SMindmapComponent;
-
-  @ViewChild(SMindmapCytoComponent)
-  mindmapCytoComponent: SMindmapCytoComponent;
+  @ViewChild(SGraphComponent)
+  mindmapComponent: SGraphComponent;
 
   @ViewChild(SHomeworkComponent)
   private homeworkComponent: SHomeworkComponent;
@@ -42,7 +39,7 @@ export class SCourseComponent implements OnInit {
   selected_node_id = ''; // 下层组件中选中节点的id
 
   selectedIndex = 0;
-  tabsName = ['思维导图', '作业', '资源', '课件'];
+  tabsName = ['知识图谱', '作业', '资源', '课件'];
 
   constructor(
     private route: ActivatedRoute,
@@ -66,7 +63,7 @@ export class SCourseComponent implements OnInit {
     });
   }
 
-  // 切换思维导图
+  // 切换知识图谱
   switchMindmap(mindmap: any) {
 
     this.currentMindmap = mindmap;

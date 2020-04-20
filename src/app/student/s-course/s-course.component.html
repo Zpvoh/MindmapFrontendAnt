@@ -8,14 +8,14 @@
         <span title><i nz-icon type="picture"></i>知识图谱</span>
         <ul>
 
-          <!-- 思维导图操作 -->
+          <!-- 知识图谱操作 -->
           <li nz-menu-group>
-            <span title>思维导图操作</span>
+            <span title>知识图谱操作</span>
             <ul>
               <li nz-submenu>
                 <span title><i nz-icon type="picture"></i>切换知识图谱</span>
 
-                <!-- 思维导图列表 -->
+                <!-- 知识图谱列表 -->
                 <ul>
                   <li nz-menu-item *ngFor="let mindmap of mindmapList" (click)="switchMindmap(mindmap)">{{mindmap['name']}}</li>
                 </ul>
@@ -48,7 +48,7 @@
         [(nzSelectedIndex)]="selectedIndex"
         [nzType]="'card'">
         <!--思维导图-->
-        <nz-tab [nzTitle]="'思维导图'"
+        <nz-tab [nzTitle]="'知识图谱'"
                 (nzDeselect)="updateData()">
           <!--<app-s-mindmap-->
             <!--*ngIf="currentMindmap"-->

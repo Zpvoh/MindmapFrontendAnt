@@ -446,6 +446,12 @@ export class SGraphComponent implements OnInit {
   }
 
   getQuestions() {
+    if (this.testList === undefined || this.testList.length === 0) {
+      this.modalService.info({
+        nzTitle: '恭喜你！已经做完所有测试题啦！'
+      });
+    }
+
     const node_id = this.testList[0]['vertex']['id'];
     window.sessionStorage.setItem('test_node', node_id);
 
@@ -466,13 +472,15 @@ export class SGraphComponent implements OnInit {
         }
 
         console.log(this.stuJudges);
-        this.isLoadingTest = false;
         this.finishNumber++;
         if (this.finishNumber === 3) {
           this.finishNumber = 0;
+          this.isLoadingTest = false;
           this.fetchOneQuestion();
         }
       });
+    } else {
+      this.finishNumber++;
     }
 
     if (this.stuShorts === undefined || this.stuShorts.length === 0) {
@@ -492,13 +500,15 @@ export class SGraphComponent implements OnInit {
         }
 
         console.log(this.stuShorts);
-        this.isLoadingTest = false;
         this.finishNumber++;
         if (this.finishNumber === 3) {
           this.finishNumber = 0;
+          this.isLoadingTest = false;
           this.fetchOneQuestion();
         }
       });
+    } else {
+      this.finishNumber++;
     }
 
     if (this.stuMultiples === undefined || this.stuMultiples.length === 0) {
@@ -518,13 +528,15 @@ export class SGraphComponent implements OnInit {
         }
 
         console.log(this.stuMultiples);
-        this.isLoadingTest = false;
         this.finishNumber++;
         if (this.finishNumber === 3) {
           this.finishNumber = 0;
+          this.isLoadingTest = false;
           this.fetchOneQuestion();
         }
       });
+    } else {
+      this.finishNumber++;
     }
   }
 
@@ -739,5 +751,8 @@ export class SGraphComponent implements OnInit {
   exitAccuracyMode() {
   }
 
+  screen_shot() {
+
+  }
 
 }

@@ -768,4 +768,7 @@ export class TMindmapCytoComponent implements OnInit {
   exitAccuracyMode() {
   }
 
+  screen_shot() {
+
+  }
 }
