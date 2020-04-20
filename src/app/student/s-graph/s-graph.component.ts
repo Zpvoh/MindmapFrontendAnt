@@ -429,7 +429,7 @@ export class SGraphComponent implements OnInit {
     }
   }
 
-  reevaluateGraph() {
+  revaluateGraph() {
     this.isLoadingRecommendation = true;
     this.recommendationService.getRecommendation(this.course_id,
       this.mindmap_id,
@@ -447,6 +447,7 @@ export class SGraphComponent implements OnInit {
 
   getQuestions() {
     if (this.testList === undefined || this.testList.length === 0) {
+      this.revaluateGraph();
       this.modalService.info({
         nzTitle: '恭喜你！已经做完所有测试题啦！'
       });

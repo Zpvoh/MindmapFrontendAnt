@@ -628,20 +628,6 @@ export class TMindmapCytoComponent implements OnInit {
     this.readGraph();
   }
 
-  switchRelationship() {
-    if (this.selectedIndex === 0) {
-      this.typeOfNewEdge = 'super-sub';
-    } else if (this.selectedIndex === 1) {
-      this.typeOfNewEdge = 'pre-suc';
-    } else if (this.selectedIndex === 2) {
-      this.typeOfNewEdge = 'synonym';
-    } else if (this.selectedIndex === 3) {
-      this.typeOfNewEdge = 'antonym';
-    } else if (this.selectedIndex === 4) {
-      this.typeOfNewEdge = 'ref';
-    }
-  }
-
   saveGraph() {
     // localStorage.setItem('cy-elements', JSON.stringify(this.elements));
     localStorage.setItem('cy-node-num', this.numOfNodes.toString());

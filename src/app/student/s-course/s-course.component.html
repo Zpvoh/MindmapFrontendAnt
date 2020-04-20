@@ -1,9 +1,9 @@
 <nz-layout>
-  <nz-sider [nzWidth]="200" style="background:#fff;">
+  <nz-sider nzCollapsible nzBreakpoint="lg" [nzCollapsedWidth]="0" [nzWidth]="200" style="background:#fff;">
 
     <!-- 侧边栏 -->
 
-    <ul nz-menu [nzMode]="'inline'" style="height:100%;">
+    <ul nz-menu  [nzTheme]="'dark'" [nzMode]="'inline'" style="height:100%;">
       <li nz-submenu>
         <span title><i nz-icon type="picture"></i>知识图谱</span>
         <ul>
@@ -50,12 +50,6 @@
         <!--思维导图-->
         <nz-tab [nzTitle]="'知识图谱'"
                 (nzDeselect)="updateData()">
-          <!--<app-s-mindmap-->
-            <!--*ngIf="currentMindmap"-->
-            <!--[courseId]="course_id"-->
-            <!--[mindmapId]="currentMindmap.id"-->
-            <!--(selectNodeEvent)="onSelectedNodeChanged($event)">-->
-          <!--</app-s-mindmap>-->
           <app-s-graph
             *ngIf="currentMindmap"
             [courseId]="course_id"
