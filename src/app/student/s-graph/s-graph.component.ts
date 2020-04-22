@@ -9,7 +9,6 @@ import 'cytoscape-context-menus/cytoscape-context-menus.css';
 import cose from 'cytoscape-cose-bilkent';
 import edgehandles from 'cytoscape-edgehandles';
 import {ColorPickerService, Rgba} from 'ngx-color-picker';
-import {forEach} from '@angular/router/src/utils/collection';
 import {StuMultiple} from '../stu-multiple';
 import {StuShort} from '../stu-short';
 import {StuJudge} from '../stu-judge';
@@ -38,6 +37,9 @@ export class SGraphComponent implements OnInit {
 
   @ViewChild('testFooter')
   testFooter: TemplateRef<{}>;
+
+  @ViewChild('situationList')
+  situationList: TemplateRef<{}>;
 
   course_id: string; // 课程id
   @Input()
@@ -90,6 +92,7 @@ export class SGraphComponent implements OnInit {
   isLoadingNext = false;
   isLoadingRecommendation = false;
   finishNumber = 0;
+  testNodeNumber = 0;
 
   cy = cytoscape({});
   graphMeta = {};
@@ -102,6 +105,7 @@ export class SGraphComponent implements OnInit {
   selectedIndex = 0;
   recommendationList = undefined;
   testList = undefined;
+  rankList = [];
 
   constructor(
     private modalService: NzModalService,
@@ -278,9 +282,10 @@ export class SGraphComponent implements OnInit {
     });
     const outside = this;
 
-    const reorganizeFunction = event => {
+    const reorganizeFunction = () => {
       const lay = outside.cy.layout({
         name: 'cose-bilkent',
+        padding: 60,
         animate: 'end',
         animationEasing: 'ease-out',
         animationDuration: 1000,
@@ -344,15 +349,17 @@ export class SGraphComponent implements OnInit {
 
     const instance = this.cy.contextMenus(this.menuOptions);
 
-    const layout = this.cy.layout({
-      name: 'cose-bilkent',
-      animate: 'end',
-      animationEasing: 'ease-out',
-      animationDuration: 1000,
-      randomize: true
-    });
-
-    layout.run();
+    // const layout = this.cy.layout({
+    //   name: 'cose-bilkent',
+    //   padding: 100,
+    //   animate: 'end',
+    //   animationEasing: 'ease-out',
+    //   animationDuration: 1000,
+    //   randomize: true
+    // });
+    //
+    // layout.run();
+    // reorganizeFunction();
   }
 
   updateMindmapView() {
@@ -381,8 +388,18 @@ export class SGraphComponent implements OnInit {
     this.getQuestions();
   }
 
+  openSituationList() {
+    for (let v of this.recommendationList['sortedVertices']) {
+      this.rankList.push(Math.floor(Number(v['value']) * (this.recommendationList['sortedVertices'].length - 1) + 1));
+    }
+    this.modalService.create({
+      nzTitle: '薄弱环节Top 8',
+      nzContent: this.situationList
+    });
+  }
+
   fetchOneQuestion() {
-    if (this.stuMultiples && this.stuMultiples.length !== 0) {
+    if (this.stuMultiples && this.stuMultiples.length !== 0 && this.fetchQuestionCondition()) {
       this.currentQuestion = this.stuMultiples[0];
       this.currentQuestionType = 'multiple';
       this.testModal = this.modalService.create({
@@ -392,7 +409,7 @@ export class SGraphComponent implements OnInit {
         nzMaskClosable: false,
         nzClosable: false
       });
-    } else if (this.stuJudges && this.stuJudges.length !== 0) {
+    } else if (this.stuJudges && this.stuJudges.length !== 0 && this.fetchQuestionCondition()) {
       this.currentQuestion = this.stuJudges[0];
       this.currentQuestionType = 'judge';
       this.testModal = this.modalService.create({
@@ -402,20 +419,49 @@ export class SGraphComponent implements OnInit {
         nzMaskClosable: false,
         nzClosable: false
       });
-    } else if (this.stuShorts && this.stuShorts.length !== 0) {
-      this.currentQuestion = this.stuShorts[0];
-      this.currentQuestionType = 'short';
-      this.testModal = this.modalService.create({
-        nzTitle: this.testTitle,
-        nzContent: this.testShortContent,
-        nzFooter: this.testFooter,
-        nzMaskClosable: false,
-        nzClosable: false
-      });
     } else {
-      this.testList.splice(0, 1);
+      if (this.stuMultiples.length === 0 || this.stuJudges.length === 0) {
+        this.testList.splice(parseInt(window.sessionStorage.getItem('test_node_index')), 1);
+        this.generateNextNode();
+      }
       this.getQuestions();
     }
+
+    // else if (this.stuShorts && this.stuShorts.length !== 0) {
+    //     this.currentQuestion = this.stuShorts[0];
+    //     this.currentQuestionType = 'short';
+    //     this.testModal = this.modalService.create({
+    //       nzTitle: this.testTitle,
+    //       nzContent: this.testShortContent,
+    //       nzFooter: this.testFooter,
+    //       nzMaskClosable: false,
+    //       nzClosable: false
+    //     });
+    //   }
+  }
+
+  fetchQuestionCondition() {
+    if (window.sessionStorage.getItem('test_node') !== this.testList[this.testNodeNumber]['vertex']['id']) {
+      return false;
+    }
+    return true;
+  }
+
+  generateNextNode() {
+    const r = Math.random();
+    let range_min = 0;
+    let i = 0;
+    for (; i < this.testList.length - 1; i++) {
+      const range_max = range_min + 1 / (Math.pow(2, i + 1));
+      if (r >= range_min && r < range_max) {
+        this.testNodeNumber = i;
+        console.log('next node: ' + i);
+        return;
+      }
+      range_min = range_max;
+    }
+    this.testNodeNumber = i;
+    console.log('next node: ' + i);
   }
 
   nextTestAnswer() {
@@ -453,10 +499,9 @@ export class SGraphComponent implements OnInit {
       });
     }
 
-    const node_id = this.testList[0]['vertex']['id'];
-    window.sessionStorage.setItem('test_node', node_id);
+    const node_id = this.testList[this.testNodeNumber]['vertex']['id'];
 
-    if (this.stuJudges === undefined || this.stuJudges.length === 0) {
+    if (this.stuJudges === undefined || this.stuJudges.length === 0 || !this.fetchQuestionCondition()) {
       this.isLoadingTest = true;
       this.nodeService.getStuJudge(this.course_id,
         this.mindmap_id,
@@ -474,7 +519,9 @@ export class SGraphComponent implements OnInit {
 
         console.log(this.stuJudges);
         this.finishNumber++;
-        if (this.finishNumber === 3) {
+        if (this.finishNumber === 2) {
+          window.sessionStorage.setItem('test_node_index', this.testNodeNumber.toString());
+          window.sessionStorage.setItem('test_node', node_id);
           this.finishNumber = 0;
           this.isLoadingTest = false;
           this.fetchOneQuestion();
@@ -484,35 +531,35 @@ export class SGraphComponent implements OnInit {
       this.finishNumber++;
     }
 
-    if (this.stuShorts === undefined || this.stuShorts.length === 0) {
-      this.isLoadingTest = true;
-      this.nodeService.getShort(this.course_id,
-        this.mindmap_id,
-        node_id,
-        window.sessionStorage.getItem('user_name')).subscribe(shorts => {
-        this.stuShorts = shorts;
-        let i = 0;
-        while (i < this.stuShorts.length) {
-          if (this.stuShorts[i].answer !== '') {
-            this.stuShorts.splice(i, 1);
-          } else {
-            i++;
-          }
-        }
+    // if (this.stuShorts === undefined || this.stuShorts.length === 0) {
+    //   this.isLoadingTest = true;
+    //   this.nodeService.getShort(this.course_id,
+    //     this.mindmap_id,
+    //     node_id,
+    //     window.sessionStorage.getItem('user_name')).subscribe(shorts => {
+    //     this.stuShorts = shorts;
+    //     let i = 0;
+    //     while (i < this.stuShorts.length) {
+    //       if (this.stuShorts[i].answer !== '') {
+    //         this.stuShorts.splice(i, 1);
+    //       } else {
+    //         i++;
+    //       }
+    //     }
+    //
+    //     console.log(this.stuShorts);
+    //     this.finishNumber++;
+    //     if (this.finishNumber === 3) {
+    //       this.finishNumber = 0;
+    //       this.isLoadingTest = false;
+    //       this.fetchOneQuestion();
+    //     }
+    //   });
+    // } else {
+    //   this.finishNumber++;
+    // }
 
-        console.log(this.stuShorts);
-        this.finishNumber++;
-        if (this.finishNumber === 3) {
-          this.finishNumber = 0;
-          this.isLoadingTest = false;
-          this.fetchOneQuestion();
-        }
-      });
-    } else {
-      this.finishNumber++;
-    }
-
-    if (this.stuMultiples === undefined || this.stuMultiples.length === 0) {
+    if (this.stuMultiples === undefined || this.stuMultiples.length === 0 || !this.fetchQuestionCondition()) {
       this.isLoadingTest = true;
       this.nodeService.getStuMultiple(this.course_id,
         this.mindmap_id,
@@ -530,7 +577,9 @@ export class SGraphComponent implements OnInit {
 
         console.log(this.stuMultiples);
         this.finishNumber++;
-        if (this.finishNumber === 3) {
+        if (this.finishNumber === 2) {
+          window.sessionStorage.setItem('test_node_index', this.testNodeNumber.toString());
+          window.sessionStorage.setItem('test_node', node_id);
           this.finishNumber = 0;
           this.isLoadingTest = false;
           this.fetchOneQuestion();
@@ -539,11 +588,18 @@ export class SGraphComponent implements OnInit {
     } else {
       this.finishNumber++;
     }
+
+    if (this.finishNumber === 2) {
+      this.finishNumber = 0;
+      this.isLoadingTest = false;
+      this.fetchOneQuestion();
+    }
   }
 
   // 提交选择题
   submitMultiple(stuMultiple: StuMultiple) {
     this.isLoadingNext = true;
+    console.log(window.sessionStorage.getItem('test_node') + ' ' + this.testList[this.testNodeNumber]['vertex']['id']);
     this.nodeService.answerMultiple(
       this.course_id,
       this.mindmap_id,
@@ -556,6 +612,7 @@ export class SGraphComponent implements OnInit {
         stuMultiple.submitted = true;
         this.stuMultiples.splice(0, 1);
         this.testModal.destroy();
+        this.generateNextNode();
         this.fetchOneQuestion();
       });
   }
@@ -575,6 +632,7 @@ export class SGraphComponent implements OnInit {
         stuShort.submitted = true;
         this.stuShorts.splice(0, 1);
         this.testModal.destroy();
+        this.generateNextNode();
         this.fetchOneQuestion();
       }
     );
@@ -583,6 +641,7 @@ export class SGraphComponent implements OnInit {
   // 提交判断题
   submitJudge(stuJudge: StuJudge) {
     this.isLoadingNext = true;
+    console.log(window.sessionStorage.getItem('test_node') + ' ' + this.testList[this.testNodeNumber]['vertex']['id']);
     this.nodeService.answerJudge(
       this.course_id,
       this.mindmap_id,
@@ -595,6 +654,7 @@ export class SGraphComponent implements OnInit {
         stuJudge.submitted = true;
         this.stuJudges.splice(0, 1);
         this.testModal.destroy();
+        this.generateNextNode();
         this.fetchOneQuestion();
       });
   }
@@ -603,6 +663,7 @@ export class SGraphComponent implements OnInit {
   checkSubmit(value) {
     if (!value) {
       this.isLoadingNext = false;
+      console.log('fail');
       const inModal = this.modalService.error(
         {
           nzTitle: '提交失败',
@@ -737,6 +798,7 @@ export class SGraphComponent implements OnInit {
   changeLayout() {
     const layout = this.cy.layout({
       name: 'cose-bilkent',
+      padding: 50,
       animate: 'end',
       animationEasing: 'ease-out',
       animationDuration: 1000,

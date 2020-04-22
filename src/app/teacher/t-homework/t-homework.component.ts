@@ -108,6 +108,17 @@ export class THomeworkComponent implements OnInit, OnChanges {
       );
   }
 
+  deleteMultiple(id) {
+    // 删除选择题
+    if (!window.confirm('你确定要删除该题吗？')) {
+      return;
+    }
+    this.nodeService.deleteMultiple(id).subscribe(value => {
+      this.updateHomework();
+      console.log(value);
+    });
+  }
+
   releaseShort() {
     // 发布简答题
     this.nodeService.releaseShort(
@@ -116,6 +127,17 @@ export class THomeworkComponent implements OnInit, OnChanges {
       this.node_id,
       this.short)
       .subscribe((value => this.checkShort(value['success'])));
+  }
+
+  deleteShort(id) {
+    // 删除简答题
+    if (!window.confirm('你确定要删除该题吗？')) {
+      return;
+    }
+    this.nodeService.deleteShort(id).subscribe(value => {
+      this.updateHomework();
+      console.log(value);
+    });
   }
 
   correctShort(assignment_id, student_id, score) {
@@ -131,6 +153,17 @@ export class THomeworkComponent implements OnInit, OnChanges {
       this.node_id,
       this.judge)
       .subscribe((value => this.checkJudge(value['success'])));
+  }
+
+  deleteJudge(id) {
+    // 删除简答题
+    if (!window.confirm('你确定要删除该题吗？')) {
+      return;
+    }
+    this.nodeService.deleteJudge(id).subscribe(value => {
+      this.updateHomework();
+      console.log(value);
+    });
   }
 
   checkMultiple(value) {

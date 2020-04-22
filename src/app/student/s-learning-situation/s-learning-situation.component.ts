@@ -19,6 +19,8 @@ export class SLearningSituationComponent implements OnInit, OnChanges {
   rank: number;
   score: number;
   relevance: number;
+  numberFinish: number;
+  numberTotal: number;
 
   @Input() course_id: string; // 与上层组件中course绑定
   @Input() mind_id: string; // 与上层组件中选中的mindMap绑定
@@ -51,6 +53,8 @@ export class SLearningSituationComponent implements OnInit, OnChanges {
     for (const i in recommendStr['evaluationList']['relevance']) {
       if (recommendStr['evaluationList']['precursorGraph']['vertices'][i]['id'] === this.node_id) {
         this.relevance = recommendStr['evaluationList']['relevance'][i];
+        this.numberFinish = recommendStr['evaluationList']['scoreList']['scoreActual'][i].length;
+        this.numberTotal = recommendStr['evaluationList']['scoreList']['scoreTotal'][i].length;
         break;
       }
     }

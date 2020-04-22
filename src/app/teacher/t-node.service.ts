@@ -43,6 +43,24 @@ export class TNodeService {
     return this.http.get<JudgeQuestion[]>(this.tempUrl);
   }
 
+  // 教师删除选择题列表
+  deleteMultiple(assignment_id: number): Observable<boolean> {
+    this.tempUrl = this.baseUrl + 'delete_multiple/' + assignment_id;
+    return this.http.get<boolean>(this.tempUrl);
+  }
+
+  // 教师删除简答题列表
+  deleteShort(assignment_id: number): Observable<boolean> {
+    this.tempUrl = this.baseUrl + 'delete_short/' + assignment_id;
+    return this.http.get<boolean>(this.tempUrl);
+  }
+
+  // 教师删除判断题列表
+  deleteJudge(assignment_id: number): Observable<boolean> {
+    this.tempUrl = this.baseUrl + 'delete_judge/' + assignment_id;
+    return this.http.get<boolean>(this.tempUrl);
+  }
+
   // 教师发布选择题
   releaseMutiple(course_id: string, mindmap_id: string, node_id: string, multiple: MultipleQuestion): Observable<boolean> {
     this.tempUrl = this.baseUrl + 'release_multiple/' + course_id + '/' + mindmap_id + '/' + node_id;

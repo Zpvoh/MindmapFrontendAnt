@@ -64,7 +64,7 @@ export class TCourseComponent implements OnInit {
   }; // 用作创建新思维导图时填充
 
   selectedIndex = 0; // tab序号
-  tabsName = ['思维导图', '作业', '资源', '课件']; // tab名称
+  tabsName = ['知识图谱', '作业', '资源', '课件']; // tab名称
 
   constructor(
     private route: ActivatedRoute,

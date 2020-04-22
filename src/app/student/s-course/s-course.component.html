@@ -1,28 +1,25 @@
 <nz-layout>
-  <nz-sider nzCollapsible nzBreakpoint="lg" [nzCollapsedWidth]="0" [nzWidth]="200" style="background:#fff;">
+  <nz-sider nzCollapsible [nzCollapsed]="false" [nzWidth]="200" style="background:#fff;">
 
     <!-- 侧边栏 -->
 
-    <ul nz-menu  [nzTheme]="'dark'" [nzMode]="'inline'" style="height:100%;">
-      <li nz-submenu>
-        <span title><i nz-icon type="picture"></i>知识图谱</span>
+    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" style="height:120%;">
+      <li nz-submenu nzIcon="picture" [nzTitle]="'知识图谱'">
         <ul>
 
           <!-- 知识图谱操作 -->
-          <li nz-menu-group>
-            <span title>知识图谱操作</span>
-            <ul>
-              <li nz-submenu>
-                <span title><i nz-icon type="picture"></i>切换知识图谱</span>
+          <!--<li nz-menu-group>-->
+            <!--<ul>-->
+              <li nz-submenu [nzTitle]="'切换知识图谱'">
 
                 <!-- 知识图谱列表 -->
                 <ul>
                   <li nz-menu-item *ngFor="let mindmap of mindmapList" (click)="switchMindmap(mindmap)">{{mindmap['name']}}</li>
                 </ul>
               </li>
-              <li nz-menu-item (click)="mindmapComponent.screen_shot();">知识图谱截图</li>
-            </ul>
-          </li>
+              <!--<li nz-menu-item (click)="mindmapComponent.screen_shot();">知识图谱截图</li>-->
+            <!--</ul>-->
+          <!--</li>-->
 
         </ul>
       </li>
@@ -34,12 +31,12 @@
   <nz-layout style="padding: 0; height: 100%;">
     <!-- 思维导图 -->
 
-    <nz-breadcrumb id="mindmap-nz-breadcrumb">
-      <nz-breadcrumb-item>{{course_id}}</nz-breadcrumb-item>
-      <nz-breadcrumb-item>{{currentMindmap?.name}}</nz-breadcrumb-item>
-      <nz-breadcrumb-item>{{mindmapComponent?.selected_node?.topic}}</nz-breadcrumb-item>
-      <nz-breadcrumb-item>{{tabsName[selectedIndex]}}</nz-breadcrumb-item>
-    </nz-breadcrumb>
+    <!--<nz-breadcrumb id="mindmap-nz-breadcrumb">-->
+      <!--<nz-breadcrumb-item>{{course_id}}</nz-breadcrumb-item>-->
+      <!--<nz-breadcrumb-item>{{currentMindmap?.name}}</nz-breadcrumb-item>-->
+      <!--<nz-breadcrumb-item>{{mindmapComponent?.selected_node?.topic}}</nz-breadcrumb-item>-->
+      <!--<nz-breadcrumb-item>{{tabsName[selectedIndex]}}</nz-breadcrumb-item>-->
+    <!--</nz-breadcrumb>-->
 
     <nz-content>
       <nz-tabset

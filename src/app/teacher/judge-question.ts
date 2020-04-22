@@ -1,4 +1,5 @@
 export class JudgeQuestion {
+  id: number;
   title: string;
   correct_answer: string;
 
@@ -8,6 +9,7 @@ export class JudgeQuestion {
   value: number;
 
   constructor() {
+    this.id = undefined;
     this.title = '';
     this.correct_answer = '';
     this.correct_number = '';

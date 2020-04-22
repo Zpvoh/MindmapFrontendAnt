@@ -70,8 +70,14 @@
 
     <!--薄弱环节列表-->
     <ol>
-        <div><b>该节点掌握程度排名为第{{rank}}</b></div>
-      <div><b>做题比为{{relevance}}</b></div>
+      <nz-row [nzGutter]="16">
+        <nz-col [nzSpan]="6">
+          <nz-statistic [nzValue]="rank" [nzTitle]="'掌握程度排名'" [nzSuffix]="'名'"></nz-statistic>
+        </nz-col>
+      <nz-col [nzSpan]="6">
+        <nz-statistic [nzValue]="numberFinish" [nzTitle]="'做题比'" [nzSuffix]="'/ '+numberTotal"></nz-statistic>
+      </nz-col>
+      </nz-row>
     </ol>
 
 

@@ -1,4 +1,5 @@
 export class MultipleQuestion {
+  id: number;
   title: string;
   optionA: string;
   optionB: string;
@@ -11,6 +12,7 @@ export class MultipleQuestion {
   value: number; // 表示该题的分数 1-10
 
   constructor() {
+    this.id = undefined;
     this.title = '';
     this.optionA = '';
     this.optionB = '';

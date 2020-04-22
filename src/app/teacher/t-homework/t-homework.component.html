@@ -36,10 +36,15 @@
             <span>D. </span><span class="optionD"> {{multiple.optionD}}</span>
           </div>
         </div>
-        <div class="correct_answer item">
-          <span><b>正确答案：</b></span>
-          <span>{{multiple.correct_answer}}</span>
-        </div>
+        <nz-row>
+          <nz-col class="correct_answer item" [nzSpan]="6">
+            <span><b>正确答案：</b></span>
+            <span>{{multiple.correct_answer}}</span>
+          </nz-col>
+          <nz-col [nzSpan]="6" style="margin-left: 2em">
+            <button nz-button nzType="dashed" (click)="deleteMultiple(multiple['id'])"><i nz-icon nzType="delete" nzTheme="outline"></i>删除题目</button>
+          </nz-col>
+        </nz-row>
         <!--<div class="number item">-->
         <!--<span><b>正确率：</b></span>-->
         <!--<span class="correct_number">{{multiple.correct_number}}</span>-->
@@ -65,10 +70,15 @@
     <ol>
       <li *ngFor="let short of shortQuestions" class="short">
         <div class="title item"><b>{{short['title']}}</b></div>
-        <div class="correct_answer item">
-          <span><b>正确答案：</b></span>
-          <span>{{short['correct_answer']}}</span>
-        </div>
+        <nz-row>
+          <nz-col class="correct_answer item" [nzSpan]="6">
+            <span><b>正确答案：</b></span>
+            <span>{{short['correct_answer']}}</span>
+          </nz-col>
+          <nz-col [nzSpan]="6" style="margin-left: 2em">
+            <button nz-button nzType="dashed" (click)="deleteShort(short['assignmentLongId'])"><i nz-icon nzType="delete" nzTheme="outline"></i>删除题目</button>
+          </nz-col>
+        </nz-row>
 
         <p><b>学生回答：</b></p>
         <nz-list [nzDataSource]="short['studentAnswers']" nzSize="small" [nzRenderItem]="item">
@@ -112,10 +122,15 @@
     <ol>
       <li *ngFor="let judge of judgeQuestions" class="short">
         <div class="title item"><b>{{judge.title}}</b></div>
-        <div class="correct_answer item">
-          <span><b>正确答案：</b></span>
-          <span>{{judge.correct_answer=='T' ? '正确': '错误'}}</span>
-        </div>
+        <nz-row>
+          <nz-col class="correct_answer item">
+            <span><b>正确答案：</b></span>
+            <span>{{judge.correct_answer=='T' ? '正确': '错误'}}</span>
+          </nz-col>
+          <nz-col [nzSpan]="6" style="margin-left: 2em">
+            <button nz-button nzType="dashed" (click)="deleteJudge(judge['id'])"><i nz-icon nzType="delete" nzTheme="outline"></i>删除题目</button>
+          </nz-col>
+        </nz-row>
         <!--<div class="number item">-->
         <!--<span><b>正确率：</b></span>-->
         <!--<span class="correct_number">{{judge.correct_number}}</span>-->

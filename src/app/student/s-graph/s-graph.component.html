@@ -1,32 +1,48 @@
 <div id="map-body">
   <div id="toolbar">
-    <nz-tabset
-      id="mindmap-tabset"
-      [nzTabPosition]="'top'"
-      [(nzSelectedIndex)]="selectedIndex"
-      [nzType]="'card'"
-      (click)="switchMode()">
-      <!--关系显示模式-->
-      <nz-tab [nzTitle]="'关系显示模式'">
-      </nz-tab>
+    <!--<nz-tabset-->
+      <!--id="mindmap-tabset"-->
+      <!--[nzTabPosition]="'top'"-->
+      <!--[(nzSelectedIndex)]="selectedIndex"-->
+      <!--[nzType]="'card'"-->
+      <!--(click)="switchMode()">-->
+      <!--&lt;!&ndash;关系显示模式&ndash;&gt;-->
+      <!--<nz-tab [nzTitle]="'关系显示模式'">-->
+      <!--</nz-tab>-->
 
-      <!--学情分析模式-->
-      <nz-tab [nzTitle]="'学情分析模式' " [nzDisabled]="isLoadingTest">
-      </nz-tab>
+      <!--&lt;!&ndash;学情分析模式&ndash;&gt;-->
+      <!--<nz-tab [nzTitle]="'学情分析模式' " [nzDisabled]="isLoadingTest">-->
+      <!--</nz-tab>-->
 
-      <!--薄弱环节分析模式-->
-      <nz-tab [nzTitle]="'薄弱环节分析模式' " [nzDisabled]="isLoadingTest">
-      </nz-tab>
-    </nz-tabset>
-  </div>
-  <div>
-    <div nz-row>
-      <div nz-col nzSpan="6">
-        <button nz-button nzType="default" (click)="openTestModal()" [nzLoading]="isLoadingTest" #testButton><i nz-icon nzType="file-exclamation"></i>测试当前学习水平</button>
-      </div>
-      <div nz-col nzSpan="6">
-        <nz-progress [nzPercent]="100" [nzShowInfo]="false" [nzStrokeColor]="{ '0%': '#c94b4b', '100%': '#4b134f' }" nzStatus="active"></nz-progress>
-      </div>
+      <!--&lt;!&ndash;薄弱环节分析模式&ndash;&gt;-->
+      <!--<nz-tab [nzTitle]="'薄弱环节分析模式' " [nzDisabled]="isLoadingTest">-->
+      <!--</nz-tab>-->
+    <!--</nz-tabset>-->
+    <div>
+      <nz-row>
+        <nz-col [nzSpan]="6">
+          <nz-radio-group [(ngModel)]="selectedIndex" nzButtonStyle="solid" (ngModelChange)="switchMode()">
+            <label nz-radio-button [nzValue]=0 [nzAutoFocus]="true">关系显示模式</label>
+            <!--<label nz-radio-button [nzValue]=1 [nzDisabled]="isLoadingTest" (click)="switchMode()">学情分析模式</label>-->
+            <label nz-radio-button [nzValue]=2 [nzDisabled]="isLoadingTest">薄弱环节分析模式</label>
+          </nz-radio-group>
+        </nz-col>
+        <nz-col [nzSpan]="4">
+          <button nz-button nzType="default" (click)="openTestModal()" [nzLoading]="isLoadingTest" #testButton>
+            <i nz-icon nzType="file-exclamation"></i>
+            测试当前学习水平
+          </button>
+        </nz-col>
+        <nz-col [nzSpan]="4">
+          <button nz-button nzType="default" (click)="openSituationList()" [nzLoading]="isLoadingTest" #testButton>
+            <i nz-icon nzType="ordered-list" nzTheme="outline"></i>
+            查看薄弱环节排行
+          </button>
+        </nz-col>
+        <nz-col style="margin : 0 auto" [nzSpan]="10">
+          <i nz-popover nzPopoverTitle="所以节点的颜色是什么意思呢？" [nzPopoverContent]="popoverContentTemplate" nz-icon nzType="question-circle" nzTheme="outline" style="float: right"></i>
+        </nz-col>
+      </nz-row>
     </div>
   </div>
   <div id="cy"></div>
@@ -83,4 +99,20 @@
 <ng-template #testFooter>
   <button nz-button nzType="default" (click)="revaluateGraph()" [nzLoading]="isLoadingRecommendation"><i nz-icon nzType="vertical-align-top" nzTheme="outline"></i>提交已答题目</button>
   <button nz-button nzType="primary" (click)="nextTestAnswer()" [nzLoading]="isLoadingNext">下一题<i nz-icon nzType="caret-right" nzTheme="outline"></i></button>
+</ng-template>
+
+<ng-template #popoverContentTemplate>
+  <nz-progress [nzStrokeWidth]="10" [nzPercent]="100" [nzShowInfo]="false" [nzStrokeColor]="{ '0%': '#e1eec3', '100%': '#f05053' }" nzStatus="active"></nz-progress>
+  <span>颜色越深，代表掌握程度越好</span>
+</ng-template>
+
+<ng-template #situationList>
+  <ul style="list-style-type: None">
+    <li *ngFor="let v of recommendationList['sortedVertices'].slice(0, 8) let i=index">
+      <nz-statistic [nzValue]="this.cy.getElementById(v['vertex']['id']).data('name')"
+                    [nzTitle]="'第'+(rankList[i])+'名'">
+
+      </nz-statistic>
+    </li>
+  </ul>
 </ng-template>
