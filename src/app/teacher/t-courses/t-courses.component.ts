@@ -39,7 +39,7 @@ export class TCoursesComponent implements OnInit {
     this.courses = value;
   }
 
-  // 进入课程对应的学生思维导图页
+  // 进入课程对应的学生本体图页
   enterCourse(course_id: string) {
     // window.sessionStorage.setItem('course_id', course_id);
     this.router.navigate(['../course', course_id], {relativeTo: this.route});

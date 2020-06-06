@@ -40,15 +40,15 @@ export class TCourseComponent implements OnInit {
   mindmapList: Mindmap[] = [
     {'id': 'ics', 'name': '深入理解计算机系统'},
     {'id': 'os', 'name': '操作系统'},
-  ]; // 思维导图列表
-  currentMindmap: Mindmap = null; // 当前思维导图的对象
+  ]; // 本体图列表
+  currentMindmap: Mindmap = null; // 当前本体图的对象
 
   selected_node_id = ''; // 下层组件中选中节点的id
   isChanged; // 下层组件中内容是否改变
 
   switchToAccuracyMode = false; // 切换到准确率模式
 
-  tplModal: NzModalRef; // 用于创建新的思维导图
+  tplModal: NzModalRef; // 用于创建新的本体图
   newMindmapName = '';
   newMindJson = {
     'meta': {
@@ -61,10 +61,10 @@ export class TCourseComponent implements OnInit {
     /* 数据内容 */
 
     'jsonData': []
-  }; // 用作创建新思维导图时填充
+  }; // 用作创建新本体图时填充
 
   selectedIndex = 0; // tab序号
-  tabsName = ['知识图谱', '作业', '资源', '课件']; // tab名称
+  tabsName = ['本体图', '作业', '资源', '课件']; // tab名称
 
   constructor(
     private route: ActivatedRoute,
@@ -93,10 +93,10 @@ export class TCourseComponent implements OnInit {
     });
   }
 
-  // 提示保存原来的思维导图
+  // 提示保存原来的本体图
   promptSave() {
     return this.modalService.confirm({
-      nzTitle: '是否保存对当前思维导图的修改？',
+      nzTitle: '是否保存对当前本体图的修改？',
       nzContent: '<b style="color: red;">如果不保存，会丢失所有更改</b>',
       nzOkText: '是',
       nzOkType: 'primary',
@@ -108,7 +108,7 @@ export class TCourseComponent implements OnInit {
     });
   }
 
-  // 切换思维导图
+  // 切换本体图
   switchMindmap(mindmap: any) {
     if (this.isChanged) {
       this.promptSave().afterClose.subscribe(
@@ -124,20 +124,20 @@ export class TCourseComponent implements OnInit {
     this.selected_node_id = '';
   }
 
-  // 创建思维导图
+  // 创建本体图
   checkAndCreate() {
     for (const m of this.mindmapList) {
       if (m.name === this.newMindmapName) {
         const inModal = this.modalService.warning(
           {
-            nzTitle: '请重新填写思维导图名称',
+            nzTitle: '请重新填写本体图名称',
             nzContent: '不可与已有的重复'
           });
         return;
       }
     }
 
-    // 参考jsmind.js里面的方法确定新的思维导图的id
+    // 参考jsmind.js里面的方法确定新的本体图的id
     const newMindmapId = (new Date().getTime().toString(16)
       + Math.random().toString(16).substr(2)).substr(2, 16); // 新的id
     this.newMindJson.meta.name = this.newMindmapName; // 新的名称
@@ -156,7 +156,7 @@ export class TCourseComponent implements OnInit {
         const inModal = this.modalService.success(
           {
             nzTitle: '创建成功',
-            nzContent: '即将进入新的思维导图界面'
+            nzContent: '即将进入新的本体图界面'
           });
 
         window.setTimeout(
@@ -188,7 +188,7 @@ export class TCourseComponent implements OnInit {
     this.selected_node_id = selected_node_id;
   }
 
-  // 打开创建新思维导图的窗口
+  // 打开创建新本体图的窗口
   openModal(tplTitle: TemplateRef<{}>, tplContent: TemplateRef<{}>, tplFooter: TemplateRef<{}>) {
 
     this.tplModal = this.modalService.create({
@@ -235,7 +235,7 @@ export class TCourseComponent implements OnInit {
     }
 
     const deleteModal = this.modalService.warning({
-        nzTitle: `确认删除思维导图${this.currentMindmap.name}吗？`,
+        nzTitle: `确认删除本体图${this.currentMindmap.name}吗？`,
         nzContent: '<b style="color: red;">删除后将无法恢复</b>',
         nzOkText: '是',
         nzOkType: 'primary',

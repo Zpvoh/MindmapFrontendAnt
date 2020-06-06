@@ -1,31 +1,5 @@
 <div id="map-body">
   <div id="toolbar">
-    <!--<nz-tabset-->
-      <!--id="mindmap-tabset"-->
-      <!--[nzTabPosition]="'top'"-->
-      <!--[(nzSelectedIndex)]="selectedIndex"-->
-      <!--[nzType]="'card'"-->
-      <!--(click)="switchRelationship()">-->
-      <!--&lt;!&ndash;父类子类关系&ndash;&gt;-->
-      <!--<nz-tab [nzTitle]="'父类-子类关系'">-->
-      <!--</nz-tab>-->
-
-      <!--&lt;!&ndash;前序后序关系&ndash;&gt;-->
-      <!--<nz-tab [nzTitle]="'前序-后序关系'">-->
-      <!--</nz-tab>-->
-
-      <!--&lt;!&ndash;同义词关系&ndash;&gt;-->
-      <!--<nz-tab [nzTitle]="'同义词关系'">-->
-      <!--</nz-tab>-->
-
-      <!--&lt;!&ndash;反义词关系&ndash;&gt;-->
-      <!--<nz-tab [nzTitle]="'反义词关系'">-->
-      <!--</nz-tab>-->
-
-      <!--&lt;!&ndash;相关关系&ndash;&gt;-->
-      <!--<nz-tab [nzTitle]="'相关关系'">-->
-      <!--</nz-tab>-->
-    <!--</nz-tabset>-->
     <nz-radio-group [(ngModel)]="typeOfNewEdge" nzButtonStyle="solid">
       <label nz-radio-button nzValue="super-sub">父类-子类关系</label>
       <label nz-radio-button nzValue="pre-suc">前序-后序关系</label>
@@ -36,5 +10,12 @@
   </div>
   <div id="cy"></div>
 </div>
+
+<ng-template #renameContent>
+  <form>
+    <div class="title item">请输入新的名字</div>
+    <input type="text" [value]="nodeName">
+  </form>
+</ng-template>
 
 

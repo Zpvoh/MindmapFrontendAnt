@@ -1,6 +1,4 @@
-# MindmapFrontendAnt
-
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.4.
+# OntologyFrontendAnt
 
 ## Development server
 
@@ -29,7 +27,9 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## 部署方式（apache）
 ```
-ng build --prod --base-href /Mindmap-Frontend-Ant/
+ng build --prod --base-href /Ontology-Frontend-Ant/
 
 ```
-将`dist`目录下的文件复制到`webapps`目录下即可通过`server_ip:8080/Mindmap-Frontend-Ant`访问
+将`dist`目录下的文件复制到`webapps`目录下即可通过`server_ip/Ontology-Frontend-Ant`访问
+
+若apache非默认80端口，请加端口号

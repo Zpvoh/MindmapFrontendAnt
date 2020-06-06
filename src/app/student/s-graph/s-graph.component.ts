@@ -41,13 +41,19 @@ export class SGraphComponent implements OnInit {
   @ViewChild('situationList')
   situationList: TemplateRef<{}>;
 
+  @ViewChild('recommList')
+  recommList: TemplateRef<{}>;
+
+  @ViewChild('resourceListView')
+  resourceListView: TemplateRef<{}>;
+
   course_id: string; // 课程id
   @Input()
   set courseId(course_id: string) {
     this.course_id = course_id;
   }
 
-  mindmap_id: string; // 思维导图id
+  mindmap_id: string; // 本体图id
   @Input()
   set mindmapId(mindmap_id: string) {
     this.mindmap_id = mindmap_id;
@@ -67,13 +73,13 @@ export class SGraphComponent implements OnInit {
 
   mindStr: any;
 
-  public mindMap; // 思维导图组件
+  public mindMap; // 本体图组件
 
-  selected_node_id: string; // 当前思维导图中被选中的节点
+  selected_node_id: string; // 当前本体图中被选中的节点
   @Output() selectNodeEvent = new EventEmitter<string>();
   selected_node;
 
-  isChanged = false; // 记录思维导图是否被编辑过
+  isChanged = false; // 记录本体图是否被编辑过
   @Output() modifyContentEvent = new EventEmitter<boolean>();
 
   font_color: string; // 记录选中的字体颜色
@@ -105,7 +111,9 @@ export class SGraphComponent implements OnInit {
   selectedIndex = 0;
   recommendationList = undefined;
   testList = undefined;
+  recommendResourceList = undefined;
   rankList = [];
+  resourceList = [];
 
   constructor(
     private modalService: NzModalService,
@@ -378,8 +386,20 @@ export class SGraphComponent implements OnInit {
       }
     } else if (this.selectedIndex === 2) {
       for (let i = 0; i < this.recommendationList['sortedVertices'].length; i++) {
-        const ele = this.cy.getElementById(this.recommendationList['sortedVertices'][i]['vertex']['id']);
+        // const id = this.recommendationList['sortedVertices'][i]['vertex']['id'];
+        // const longId = this.recommendationList['sortedVertices'][i]['vertex']['longId'];;
+        // const ele = this.cy.getElementById(id);
+        // const index = this.recommendationList['precursorGraph']['indexIdMap'][longId];
+        // ele.data('color', this.recommendationService.getColor(this.recommendationList['importanceList'][index]));
+        const id = this.recommendationList['sortedVertices'][i]['vertex']['id'];
+        const ele = this.cy.getElementById(id);
         ele.data('color', this.recommendationService.getColor(this.recommendationList['sortedVertices'][i]['value']));
+      }
+    } else if (this.selectedIndex === 3) {
+      for (let i = 0; i < this.recommendResourceList['sortedVertices'].length; i++) {
+        const id = this.recommendResourceList['sortedVertices'][i]['vertex']['id'];
+        const ele = this.cy.getElementById(id);
+        ele.data('color', this.recommendationService.getColor(1 - this.recommendResourceList['sortedVertices'][i]['value']));
       }
     }
   }
@@ -395,6 +415,28 @@ export class SGraphComponent implements OnInit {
     this.modalService.create({
       nzTitle: '薄弱环节Top 8',
       nzContent: this.situationList
+    });
+  }
+
+  openRecommendList() {
+    for (let v of this.recommendResourceList['sortedVertices']) {
+      this.rankList.push(Math.floor(Number(v['value']) * (this.recommendResourceList['sortedVertices'].length - 1) + 1));
+    }
+    this.modalService.create({
+      nzTitle: '推荐学习Top 8',
+      nzContent: this.recommList
+    });
+  }
+
+  clickToViewResource(node_id) {
+    console.log(node_id);
+    this.nodeService.getLinks(this.course_id, this.mindmap_id, node_id).subscribe(linkList => {
+      this.resourceList = linkList;
+      console.log(linkList);
+      this.modalService.create({
+        nzTitle: '相关资源推荐',
+        nzContent: this.resourceListView
+      });
     });
   }
 
@@ -420,9 +462,10 @@ export class SGraphComponent implements OnInit {
         nzClosable: false
       });
     } else {
-      if (this.stuMultiples.length === 0 || this.stuJudges.length === 0) {
-        this.testList.splice(parseInt(window.sessionStorage.getItem('test_node_index')), 1);
-        this.generateNextNode();
+      if (this.stuMultiples.length === 0 && this.stuJudges.length === 0) {
+        this.testList.splice(parseInt(window.sessionStorage.getItem('test_node_index'), 10), 1);
+        localStorage.setItem('test_list', JSON.stringify(this.testList));
+        this.generateNextNode(true);
       }
       this.getQuestions();
     }
@@ -447,21 +490,34 @@ export class SGraphComponent implements OnInit {
     return true;
   }
 
-  generateNextNode() {
-    const r = Math.random();
-    let range_min = 0;
-    let i = 0;
-    for (; i < this.testList.length - 1; i++) {
-      const range_max = range_min + 1 / (Math.pow(2, i + 1));
-      if (r >= range_min && r < range_max) {
-        this.testNodeNumber = i;
-        console.log('next node: ' + i);
-        return;
+  generateNextNode(is_removed) {
+    // const r = Math.random();
+    // let range_min = 0;
+    // let i = 0;
+    // for (; i < this.testList.length - 1; i++) {
+    //   const range_max = range_min + 1 / (Math.pow(4, i + 1));
+    //   if (r >= range_min && r < range_max) {
+    //     this.testNodeNumber = i;
+    //     console.log('next node: ' + i);
+    //     return;
+    //   }
+    //   range_min = range_max;
+    // }
+    // this.testNodeNumber = i;
+    if (!is_removed) {
+      if (this.testNodeNumber + 1 < this.testList.length) {
+        this.testNodeNumber++;
+      } else if (this.testList.length > 0) {
+        this.testNodeNumber = 0;
       }
-      range_min = range_max;
+    } else {
+      if (this.testNodeNumber - 1 >= 0) {
+        this.testNodeNumber--;
+      } else if (this.testList.length > 0) {
+        this.testNodeNumber = this.testList.length - 1;
+      }
     }
-    this.testNodeNumber = i;
-    console.log('next node: ' + i);
+    console.log('next node: ' + this.testNodeNumber);
   }
 
   nextTestAnswer() {
@@ -612,7 +668,7 @@ export class SGraphComponent implements OnInit {
         stuMultiple.submitted = true;
         this.stuMultiples.splice(0, 1);
         this.testModal.destroy();
-        this.generateNextNode();
+        this.generateNextNode(false);
         this.fetchOneQuestion();
       });
   }
@@ -632,7 +688,7 @@ export class SGraphComponent implements OnInit {
         stuShort.submitted = true;
         this.stuShorts.splice(0, 1);
         this.testModal.destroy();
-        this.generateNextNode();
+        this.generateNextNode(false);
         this.fetchOneQuestion();
       }
     );
@@ -654,7 +710,7 @@ export class SGraphComponent implements OnInit {
         stuJudge.submitted = true;
         this.stuJudges.splice(0, 1);
         this.testModal.destroy();
-        this.generateNextNode();
+        this.generateNextNode(false);
         this.fetchOneQuestion();
       });
   }
@@ -696,7 +752,7 @@ export class SGraphComponent implements OnInit {
     //     const inModal = this.modalService.success(
     //       {
     //         nzTitle: '提交成功',
-    //         nzContent: '已保存思维导图'
+    //         nzContent: '已保存本体图'
     //       });
     //     window.setTimeout(() => {
     //       inModal.destroy();
@@ -710,7 +766,7 @@ export class SGraphComponent implements OnInit {
     //     const inModal = this.modalService.error(
     //       {
     //         nzTitle: '提交错误',
-    //         nzContent: '未能保存思维导图'
+    //         nzContent: '未能保存本体图'
     //       });
     //     window.setTimeout(() => {
     //       inModal.destroy();
@@ -745,10 +801,13 @@ export class SGraphComponent implements OnInit {
       this.isLoadingTest = false;
       this.recommendationList = recommendStr[0];
       this.testList = recommendStr[1];
+      this.recommendResourceList = recommendStr[2];
       localStorage.setItem('recommendation_list', JSON.stringify(recommendStr[0]));
       localStorage.setItem('test_list', JSON.stringify(recommendStr[1]));
+      localStorage.setItem('recommend_resource_list', JSON.stringify(recommendStr[2]));
       console.log(this.recommendationList);
       console.log(this.testList);
+      console.log(this.recommendResourceList);
     });
   }
 

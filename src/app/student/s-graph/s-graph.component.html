@@ -20,11 +20,12 @@
     <!--</nz-tabset>-->
     <div>
       <nz-row>
-        <nz-col [nzSpan]="6">
+        <nz-col [nzSpan]="8">
           <nz-radio-group [(ngModel)]="selectedIndex" nzButtonStyle="solid" (ngModelChange)="switchMode()">
             <label nz-radio-button [nzValue]=0 [nzAutoFocus]="true">关系显示模式</label>
             <!--<label nz-radio-button [nzValue]=1 [nzDisabled]="isLoadingTest" (click)="switchMode()">学情分析模式</label>-->
             <label nz-radio-button [nzValue]=2 [nzDisabled]="isLoadingTest">薄弱环节分析模式</label>
+            <label nz-radio-button [nzValue]=3 [nzDisabled]="isLoadingTest">推荐度模式</label>
           </nz-radio-group>
         </nz-col>
         <nz-col [nzSpan]="4">
@@ -39,7 +40,13 @@
             查看薄弱环节排行
           </button>
         </nz-col>
-        <nz-col style="margin : 0 auto" [nzSpan]="10">
+        <nz-col [nzSpan]="4">
+          <button nz-button nzType="default" (click)="openRecommendList()" [nzLoading]="isLoadingTest" #testButton>
+            <i nz-icon nzType="ordered-list" nzTheme="outline"></i>
+            查看推荐度排行
+          </button>
+        </nz-col>
+        <nz-col style="margin : 0 auto" [nzSpan]="4">
           <i nz-popover nzPopoverTitle="所以节点的颜色是什么意思呢？" [nzPopoverContent]="popoverContentTemplate" nz-icon nzType="question-circle" nzTheme="outline" style="float: right"></i>
         </nz-col>
       </nz-row>
@@ -114,5 +121,31 @@
 
       </nz-statistic>
     </li>
+  </ul>
+</ng-template>
+
+<ng-template #recommList>
+  <ul style="list-style-type: None">
+    <li *ngFor="let v of recommendResourceList['sortedVertices'].slice(0, 8) let i=index">
+      <nz-statistic [nzValue]="this.cy.getElementById(v['vertex']['id']).data('name')"
+                    [nzTitle]="'第'+(rankList[i])+'名'" (click)="clickToViewResource(v['vertex']['id'])">
+
+      </nz-statistic>
+    </li>
+  </ul>
+</ng-template>
+
+<ng-template #resourceListView>
+  <ul style="list-style-type: None">
+      <nz-list [nzDataSource]="resourceList"
+               [nzRenderItem]="link_item">
+        <ng-template #link_item let-link_item>
+          <nz-list-item [nzContent]="link_item['link_name']" [nzActions]="[jumpAction]">
+            <ng-template #jumpAction>
+              <a target="_blank" href="{{ link_item['link_address'] }}">访问</a>
+            </ng-template>
+          </nz-list-item>
+        </ng-template>
+      </nz-list>
   </ul>
 </ng-template>

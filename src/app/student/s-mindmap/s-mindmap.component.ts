@@ -22,7 +22,7 @@ export class SMindmapComponent implements OnInit {
     this.course_id = course_id;
   }
 
-  mindmap_id: string; // 思维导图id
+  mindmap_id: string; // 本体图id
   @Input()
   set mindmapId(mindmap_id: string) {
     this.mindmap_id = mindmap_id;
@@ -33,16 +33,16 @@ export class SMindmapComponent implements OnInit {
     }
   }
 
-  mindJson: any; // 思维导图Json数据
+  mindJson: any; // 本体图Json数据
 
-  public mindMap; // 思维导图组件
+  public mindMap; // 本体图组件
 
-  selected_node_id: string; // 当前思维导图中被选中的节点
+  selected_node_id: string; // 当前本体图中被选中的节点
   @Output() selectNodeEvent = new EventEmitter<string>();
   selected_node;
 
   modeValue = 'homework';
-  mindmap_node_count: any; // 思维导图资源数量，包括作业、课件、资源
+  mindmap_node_count: any; // 本体图资源数量，包括作业、课件、资源
 
   constructor(
     private mindmapService: SMindmapService

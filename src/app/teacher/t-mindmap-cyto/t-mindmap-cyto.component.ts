@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild} from '@angular/core';
 import cytoscape from 'cytoscape';
 import $ from 'jquery';
 import contextMenus from 'cytoscape-context-menus';
@@ -21,6 +21,9 @@ export class TMindmapCytoComponent implements OnInit {
   flag: boolean;
 
   course_id: string;
+
+  @ViewChild('renameContent')
+  renameContent: TemplateRef<{}>;
 
   @Input()
   set courseId(course_id: string) {
@@ -48,13 +51,13 @@ export class TMindmapCytoComponent implements OnInit {
 
   mindStr: any;
 
-  public mindMap; // 思维导图组件
+  public mindMap; // 本体图组件
 
-  selected_node_id: string; // 当前思维导图中被选中的节点
+  selected_node_id: string; // 当前本体图中被选中的节点
   @Output() selectNodeEvent = new EventEmitter<string>();
   selected_node;
 
-  isChanged = false; // 记录思维导图是否被编辑过
+  isChanged = false; // 记录本体图是否被编辑过
   @Output() modifyContentEvent = new EventEmitter<boolean>();
 
   font_color: string; // 记录选中的字体颜色
@@ -72,6 +75,7 @@ export class TMindmapCytoComponent implements OnInit {
   edgeHandleOptions = {};
   selectedIndex = 0;
   typeOfNewEdge = 'super-sub';
+  nodeName = '';
 
   constructor(
     private modalService: NzModalService,
@@ -240,14 +244,25 @@ export class TMindmapCytoComponent implements OnInit {
         edgeTarget.data('parentID', '');
         console.log('edgeTarget', edgeTarget);
       } else if (target.group() === 'nodes') {
+
+        // 定义判断边是否与将删除节点相关的函数
         const judgerEdges = ele => {
           return ele.data.source === target.data('id') || ele.data.target === target.data('id');
         };
+
+        // 寻找相关的边
         let edge = outside.elements.find(judgerEdges);
+
+        // 循环删除相关的边
         while (edge !== undefined) {
+          // 若删除的边为包含-从属关系，则同时清除从属节点parentID
+          if (edge.data.type === 'super-sub') {
+            const childId = edge.data.target;
+            const child = outside.cy.$id(childId);
+            child.data('parentID', '');
+          }
           A(outside.cy.$id(edge.data.id));
           edge = outside.elements.find(judgerEdges);
-          console.log(outside.elements);
         }
       }
       const judgerSelf = ele => {
@@ -376,18 +391,26 @@ export class TMindmapCytoComponent implements OnInit {
       }
       this.saveGraph();
     };
+
     const findPreSucPath = function F(src, current) {
-      let edgesOut = current.outgoers('edge[type="pre-suc"]');
+      // 获取所有后序节点
+      let edgesOut = current.outgoers('edge[type="pre-suc"], edge[type="super-sub"]');
+
+      // 如找到环，返回true
       if (src === current) {
         return true;
       }
 
+      // 递归判断后序节点，若后序节点找到环，则返回true
       for (let i = 0; i < edgesOut.length; i++) {
         let result = F(src, edgesOut[i].target());
         if (result === true) {
           return true;
         }
       }
+
+      // 递归结束仍未找到环，返回false
+      return false;
     };
 
     // this.cy.on('taphold', addFunction);
@@ -454,15 +477,15 @@ export class TMindmapCytoComponent implements OnInit {
         {
           id: 'reorganize-node',
           content: '重新组织',
-          tooltipText: '重新组织知识图谱展示方式',
+          tooltipText: '重新组织本体图展示方式',
           selector: '',
           coreAsWell: true,
           onClickFunction: reorganizeFunction
         },
         {
           id: 'save-node',
-          content: '保存知识图谱',
-          tooltipText: '保存知识图谱至服务器',
+          content: '保存本体图',
+          tooltipText: '保存本体图至服务器',
           selector: '',
           coreAsWell: true,
           onClickFunction: saveFunction
@@ -548,14 +571,17 @@ export class TMindmapCytoComponent implements OnInit {
           addedEles.data('name', '前序知识');
         } else if (outside.typeOfNewEdge === 'super-sub') {
           let root = sourceNode;
-          while (root.data('parentID') !== '') {
+          while (root.data('parentID') !== '' && root.data('parentID') !== undefined) {
             root = outside.cy.getElementById(root.data('parentID'));
           }
           console.log('root', root);
+          // 判断新增边是否符合（1）不存在父节点 （2）目标节点不为根节点，若不符合，不添加该边
           if (addedEles.parallelEdges().length > 1 || targetNode.data('parentID') !== '' || root === targetNode) {
             outside.cy.remove(addedEles);
             return;
           }
+
+          // 保存父节点信息
           targetNode.data('parentID', sourceNode.data('id'));
           addedEles.data('name', '包含');
         } else if (outside.typeOfNewEdge === 'ref') {
@@ -649,7 +675,7 @@ export class TMindmapCytoComponent implements OnInit {
         const inModal = this.modalService.success(
           {
             nzTitle: '提交成功',
-            nzContent: '已保存思维导图'
+            nzContent: '已保存本体图'
           });
         window.setTimeout(() => {
           inModal.destroy();
@@ -663,7 +689,7 @@ export class TMindmapCytoComponent implements OnInit {
         const inModal = this.modalService.error(
           {
             nzTitle: '提交错误',
-            nzContent: '未能保存思维导图'
+            nzContent: '未能保存本体图'
           });
         window.setTimeout(() => {
           inModal.destroy();

@@ -33,13 +33,13 @@ export class SCourseComponent implements OnInit {
   mindmapList: Mindmap[] = [
     {'id': 'ics', 'name': '深入理解计算机系统'},
     {'id': 'os', 'name': '操作系统'},
-  ]; // 思维导图列表
-  currentMindmap: Mindmap = null; // 当前思维导图的对象
+  ]; // 本体图列表
+  currentMindmap: Mindmap = null; // 当前本体图的对象
 
   selected_node_id = ''; // 下层组件中选中节点的id
 
   selectedIndex = 0;
-  tabsName = ['知识图谱', '作业', '资源', '课件'];
+  tabsName = ['本体图', '作业', '资源', '课件'];
 
   constructor(
     private route: ActivatedRoute,
@@ -63,7 +63,7 @@ export class SCourseComponent implements OnInit {
     });
   }
 
-  // 切换知识图谱
+  // 切换本体图
   switchMindmap(mindmap: any) {
 
     this.currentMindmap = mindmap;

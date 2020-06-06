@@ -46,13 +46,13 @@ export class TMindmapComponent implements OnInit {
 
   mindStr: any;
 
-  public mindMap; // 思维导图组件
+  public mindMap; // 本体图组件
 
-  selected_node_id: string; // 当前思维导图中被选中的节点
+  selected_node_id: string; // 当前本体图中被选中的节点
   @Output() selectNodeEvent = new EventEmitter<string>();
   selected_node;
 
-  isChanged = false; // 记录思维导图是否被编辑过
+  isChanged = false; // 记录本体图是否被编辑过
   @Output() modifyContentEvent = new EventEmitter<boolean>();
 
   font_color: string; // 记录选中的字体颜色
@@ -205,7 +205,7 @@ export class TMindmapComponent implements OnInit {
     this.modifyContentEvent.emit(this.isChanged);
   }
 
-  // 保存思维导图到服务器
+  // 保存本体图到服务器
   save() {
     const mindJson = this.mindMap.get_data(); // 格式同 const mind
     console.log(mindJson);
@@ -218,7 +218,7 @@ export class TMindmapComponent implements OnInit {
         const inModal = this.modalService.success(
           {
             nzTitle: '提交成功',
-            nzContent: '已保存思维导图'
+            nzContent: '已保存本体图'
           });
         window.setTimeout(() => {
           inModal.destroy();
@@ -232,7 +232,7 @@ export class TMindmapComponent implements OnInit {
         const inModal = this.modalService.error(
           {
             nzTitle: '提交错误',
-            nzContent: '未能保存思维导图'
+            nzContent: '未能保存本体图'
           });
         window.setTimeout(() => {
           inModal.destroy();

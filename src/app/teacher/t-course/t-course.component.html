@@ -5,30 +5,30 @@
     <!-- 侧边栏 -->
 
     <ul nz-menu [nzMode]="'inline'" style="height:100%;">
-      <li nz-submenu [nzTitle]="'知识图谱'" nzIcon="picture">
+      <li nz-submenu [nzTitle]="'本体图'" nzIcon="picture">
         <ul>
 
-          <!-- 思维导图操作 -->
+          <!-- 本体图操作 -->
           <li nz-menu-group>
             <ul>
-              <li nz-submenu [nzTitle]="'切换思维导图'">
-                <!-- 思维导图列表 -->
+              <li nz-submenu [nzTitle]="'切换本体图'">
+                <!-- 本体图列表 -->
                 <ul>
                   <li nz-menu-item *ngFor="let mindmap of mindmapList" (click)="switchMindmap(mindmap)">
                     {{mindmap['name']}}
                   </li>
                 </ul>
               </li>
-              <!--<li nz-menu-item [nzDisabled]="!currentMindmap" (click)="mindmapComponent.screen_shot()">思维导图截图</li>-->
+              <!--<li nz-menu-item [nzDisabled]="!currentMindmap" (click)="mindmapComponent.screen_shot()">本体图截图</li>-->
               <li nz-menu-item
                   (click)="createMindmap(newMindmapTitle, newMindmapContent, newMindmapFooter)">
-                创建知识图谱
+                创建本体图
               </li>
-              <li nz-menu-item [nzDisabled]="!currentMindmap" (click)="deleteMindmap()">删除当前知识图谱</li>
+              <li nz-menu-item [nzDisabled]="!currentMindmap" (click)="deleteMindmap()">删除当前本体图</li>
             </ul>
           </li>
 
-          <!-- 显示当前思维导图作业正确率 -->
+          <!-- 显示当前本体图作业正确率 -->
           <li nz-menu-group>
             <span title>作业正确率</span>
             <ul>
@@ -66,7 +66,7 @@
   </nz-sider>
 
   <nz-layout style="padding: 0; height: 100%;">
-    <!-- 思维导图 -->
+    <!-- 本体图 -->
 
     <nz-breadcrumb id="mindmap-nz-breadcrumb">
       <nz-breadcrumb-item>{{course_id}}</nz-breadcrumb-item>
@@ -81,8 +81,8 @@
         [nzTabPosition]="'top'"
         [(nzSelectedIndex)]="selectedIndex"
         [nzType]="'card'">
-        <!--思维导图-->
-        <nz-tab [nzTitle]="'知识图谱'"
+        <!--本体图-->
+        <nz-tab [nzTitle]="'本体图'"
                 (nzDeselect)="updateData()">
           <!--<app-t-mindmap-->
             <!--*ngIf="currentMindmap"-->
@@ -141,12 +141,12 @@
   </nz-layout>
 </nz-layout>
 
-<!-- 模板 创建新的思维导图 -->
+<!-- 模板 创建新的本体图 -->
 <ng-template #newMindmapTitle>
-  <span>创建新知识图谱</span>
+  <span>创建新本体图</span>
 </ng-template>
 <ng-template #newMindmapContent>
-  <input nz-input placeholder="请输入新知识图谱名称，不可与已有的重复。" [(ngModel)]="newMindmapName">
+  <input nz-input placeholder="请输入新本体图名称，不可与已有的重复。" [(ngModel)]="newMindmapName">
 </ng-template>
 <ng-template #newMindmapFooter>
   <button nz-button nzType="primary" (click)="checkAndCreate()">提交</button>

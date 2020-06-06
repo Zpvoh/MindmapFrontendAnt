@@ -4,20 +4,20 @@
     <!-- 侧边栏 -->
 
     <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" style="height:120%;">
-      <li nz-submenu nzIcon="picture" [nzTitle]="'知识图谱'">
+      <li nz-submenu nzIcon="picture" [nzTitle]="'本体图'">
         <ul>
 
-          <!-- 知识图谱操作 -->
+          <!-- 本体图操作 -->
           <!--<li nz-menu-group>-->
             <!--<ul>-->
-              <li nz-submenu [nzTitle]="'切换知识图谱'">
+              <li nz-submenu [nzTitle]="'切换本体图'">
 
-                <!-- 知识图谱列表 -->
+                <!-- 本体图列表 -->
                 <ul>
                   <li nz-menu-item *ngFor="let mindmap of mindmapList" (click)="switchMindmap(mindmap)">{{mindmap['name']}}</li>
                 </ul>
               </li>
-              <!--<li nz-menu-item (click)="mindmapComponent.screen_shot();">知识图谱截图</li>-->
+              <!--<li nz-menu-item (click)="mindmapComponent.screen_shot();">本体图截图</li>-->
             <!--</ul>-->
           <!--</li>-->
 
@@ -29,7 +29,7 @@
   </nz-sider>
 
   <nz-layout style="padding: 0; height: 100%;">
-    <!-- 思维导图 -->
+    <!-- 本体图 -->
 
     <!--<nz-breadcrumb id="mindmap-nz-breadcrumb">-->
       <!--<nz-breadcrumb-item>{{course_id}}</nz-breadcrumb-item>-->
@@ -44,8 +44,8 @@
         [nzTabPosition]="'top'"
         [(nzSelectedIndex)]="selectedIndex"
         [nzType]="'card'">
-        <!--思维导图-->
-        <nz-tab [nzTitle]="'知识图谱'"
+        <!--本体图-->
+        <nz-tab [nzTitle]="'本体图'"
                 (nzDeselect)="updateData()">
           <app-s-graph
             *ngIf="currentMindmap"
